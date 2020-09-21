@@ -42,8 +42,6 @@ defmodule HippoAbs.Account do
   def get_user_by_email(email), do: Repo.get_by(User, email: email)
 
   def authenticate(params) do
-    Logger.error("authenticate(#{inspect params})")
-    # Logger.error("authenticate(#{inspect config})")
     pow_authenticate(params)
   end
 
@@ -61,9 +59,14 @@ defmodule HippoAbs.Account do
 
   """
   def create(attrs \\ %{}) do
-    Logger.error("create(#{inspect attrs})")
-    %User{}
-    |> User.registration_patient_changeset(attrs)
+    case Map.fetch!(attrs, "type") do
+      2 ->  # 환자 회원
+        %User{}
+        |> User.registration_patient_changeset(attrs)
+      3 ->  # 의사 회원
+        %User{}
+        |> User.registration_doctor_changeset(attrs)
+    end
     |> Repo.insert()
   end
 

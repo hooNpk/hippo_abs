@@ -25,7 +25,6 @@ defmodule HippoAbs.Account.User do
   end
 
   def changeset(user_or_changeset, attrs) do
-    Logger.warn(inspect attrs)
     user_or_changeset
     |> pow_changeset(attrs)
     |> cast(attrs, [:name, :phonenum])
@@ -35,7 +34,6 @@ defmodule HippoAbs.Account.User do
   end
 
   def registration_patient_changeset(user_or_changeset, attrs) do
-    Logger.warn("user.change: #{inspect attrs}")
     user_or_changeset
     |> changeset(attrs)
     |> cast(attrs, [:type, :gender, :birth])

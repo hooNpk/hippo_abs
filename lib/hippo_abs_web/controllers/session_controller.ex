@@ -7,8 +7,6 @@ defmodule HippoAbsWeb.SessionController do
 
 
   def create(conn, %{"user" => user_params}) do
-    Logger.error("+++++++++++++++++++++++++++++++")
-    Logger.error(inspect user_params)
     conn
     |> Pow.Plug.authenticate_user(user_params)
     |> case do
