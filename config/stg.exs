@@ -4,7 +4,7 @@ use Mix.Config
 config :hippo_abs, HippoAbs.Repo,
   username: "imtl",
   password: "7222",
-  database: "hippo_abs_dev",
+  database: "dtplatdb",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

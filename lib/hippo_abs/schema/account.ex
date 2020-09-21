@@ -65,7 +65,7 @@ defmodule HippoAbs.Account do
       3 ->  # 의사 회원
         %User{} |> User.registration_doctor_changeset(attrs)
     end
-    |> Repo.insert()
+    |> pow_create()
   end
 
   @doc """
