@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # HippoAbs
 
 To start your Phoenix server:
@@ -17,6 +16,3 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
-=======
-# hippo_abs
->>>>>>> f0bf70f6a00ac705924bd735c826d0945dce3271
