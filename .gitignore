@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # The directory Mix will write compiled artifacts to.
 /_build/
 
@@ -33,15 +33,7 @@ npm-debug.log
 # we ignore priv/static. You may want to comment
 # this depending on your deployment strategy.
 /priv/static/
-=======
-/_build
-/cover
-/deps
-/doc
-/.fetch
-erl_crash.dump
-*.ez
-*.beam
+
 /config/*.secret.exs
+
 .elixir_ls/
->>>>>>> a297900553f57bd3ba65adee31cda67bf1016de6
