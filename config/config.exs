@@ -33,8 +33,8 @@ config :hippo_abs, :pow,
   users_context: HippoAbs.Account
 
 config :pow,
-  # ttl: :timer.hours(1)
-  ttl: :timer.minutes(1)
+  ttl: :timer.hours(1)
+  # ttl: :timer.minutes(1)
 
 
 # Import environment specific config. This must remain at the bottom

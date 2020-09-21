@@ -61,18 +61,10 @@ defmodule HippoAbs.Account do
   def create(attrs \\ %{}) do
     case Map.fetch!(attrs, "type") do
       2 ->  # 환자 회원
-        %User{}
-        |> User.registration_patient_changeset(attrs)
+        %User{} |> User.registration_patient_changeset(attrs)
       3 ->  # 의사 회원
-        %User{}
-        |> User.registration_doctor_changeset(attrs)
+        %User{} |> User.registration_doctor_changeset(attrs)
     end
-    |> Repo.insert()
-  end
-
-  def create_doctor(attrs \\ %{}) do
-    %User{}
-    |> User.registration_doctor_changeset(attrs)
     |> Repo.insert()
   end
 
