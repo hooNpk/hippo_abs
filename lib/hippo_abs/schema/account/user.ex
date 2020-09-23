@@ -18,6 +18,7 @@ defmodule HippoAbs.Account.User do
     field :gender, :integer
     field :birth, :date
     field :hospital_code, :integer
+    has_many :device, HippoAbs.Service.Device
 
     pow_user_fields()
 
@@ -27,36 +28,37 @@ defmodule HippoAbs.Account.User do
   def changeset(user_or_changeset, attrs) do
     user_or_changeset
     |> pow_changeset(attrs)
-    |> cast(attrs, [:name, :phonenum])
-    |> validate_required([:name, :phonenum])
+    |> cast(attrs, [:name, :type])
+    |> validate_required([:name, :type])
     |> validate_length(:name, min: 2, max: 32)
-    |> validate_format(:phonenum, ~r"^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$")
+    |> validate_number(:type, less_than_or_equal_to: 3, greater_than_or_equal_to: 0)
+    |> change_user(attrs)
+    |> change_doctor(attrs)
   end
 
-  def registration_patient_changeset(user_or_changeset, attrs) do
+  def change_user(user_or_changeset, %{"type" => 2} = attrs) do
     user_or_changeset
-    |> changeset(attrs)
-    |> cast(attrs, [:type, :gender, :birth])
-    |> validate_required([:type, :gender, :birth])
-    |> validate_number(:type, equal_to: 2)
+    |> cast(attrs, [:phonenum, :gender, :birth])
+    |> validate_required([:phonenum, :gender, :birth])
+    |> validate_format(:phonenum, ~r"^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$")
     |> validate_number(:gender, less_than_or_equal_to: 1, greater_than_or_equal_to: 0)
   end
+  def change_user(user_or_changeset, _), do: user_or_changeset
 
-  def registration_doctor_changeset(user_or_changeset, attrs) do
+  def change_doctor(user_or_changeset, %{"type" => 3} = attrs) do
     user_or_changeset
-    |> changeset(attrs)
-    |> cast(attrs, [:type, :hospital_code])
-    |> validate_required([:type, :hospital_code])
-    |> validate_number(:type, equal_to: 3)
+    |> cast(attrs, [:hospital_code])
+    |> validate_required([:hospital_code])
     |> validate_number(:hospital_code, greater_than: 10, less_than: 99)
   end
+  def change_doctor(user_or_changeset, _), do: user_or_changeset
 
-  defp put_password_hash(changeset) do
-    case changeset do
-      %Ecto.Changeset{valid?: true, changes: %{password: pw}} ->
-        put_change(changeset, :password_hash, Pbkdf2.hash_pwd_salt(pw))
-      _ ->
-        changeset
-    end
-  end
+  # defp put_password_hash(changeset) do
+  #   case changeset do
+  #     %Ecto.Changeset{valid?: true, changes: %{password: pw}} ->
+  #       put_change(changeset, :password_hash, Pbkdf2.hash_pwd_salt(pw))
+  #     _ ->
+  #       changeset
+  #   end
+  # end
 end

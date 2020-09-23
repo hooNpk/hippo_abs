@@ -44,6 +44,11 @@ defmodule HippoAbsWeb.Router do
     # Your protected API endpoints here
     get "/registration", UserController, :index
     delete "/registration", UserController, :delete
+
+    scope "/admin", HippoAbsWeb, as: :admin do
+      resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
+      resources "/farms", FarmController, only: [:index, :create, :update, :delete]
+    end
   end
 
   # Enables LiveDashboard only for development
