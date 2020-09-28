@@ -2,6 +2,11 @@ defmodule HippoAbs.Service.Service do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [
+      :id, :device_id, :farm_id, :inserted_at, :farm, :device, :updated_at
+    ]
+  }
+
   schema "services" do
     belongs_to :device, HippoAbs.Service.Device
     belongs_to :farm, HippoAbs.Service.Farm

@@ -2,40 +2,46 @@ defmodule HippoAbsWeb.ServiceController do
   use HippoAbsWeb, :controller
   require Logger
 
-  alias HippoAbs.ServiceContext
-
-  def index(conn, _params) do
-    conn
-    |> json(ServiceContext.list_services())
-  end
+  alias HippoAbs.{ServiceContext, Account}
 
 
-  def create(conn, %{"service" => %{"device_id" => did, "farm_id" => fid}}) do
-    case ServiceContext.create_service(did, fid) do
-      {:ok, service} ->
-        conn
-        |> render("show.json", %{data: %{service_id: service.id}})
-
-      {:error, changeset} ->
-        conn
-        |> put_view(HippoAbsWeb.ErrorView)
-        |> put_status(500)
-        |> render("error.json", changeset: changeset)
+  def index(conn, %{"device_id" => device_id}, _current_user) do
+    with  device <- ServiceContext.get_device(device_id),
+          services <- ServiceContext.list_services(device) do
+            conn
+            |> render("index.json" ,%{data: %{services: services}})
     end
   end
 
 
-  def delete(conn, %{"service" => %{"id" => id}}) do
-    case ServiceContext.delete_service(id) do
-      {:ok, device} ->
-        conn
-        |> render("show.json", device: device)
-      {:error, device} ->
-        conn
-        |> put_view(HippoAbsWeb.ErrorView)
-        |> put_status(500)
-        |> render("error.json", device: device)
+  def index(conn, params, current_user) do
+    Logger.warn(inspect params)
+    with  user <- Account.get_user!(current_user.id),
+          devices <- ServiceContext.get_devices_by_user(user),
+          services <- ServiceContext.list_services(devices) do
+            conn
+            |> render("index.json" ,%{data: %{services: services}})
     end
   end
 
+
+  def create(conn, %{"service" => %{"device_id" => did, "farm_id" => fid}}, _current_user) do
+    with  {:ok, service} <- ServiceContext.create_service(did, fid) do
+      conn
+      |> render("show.json", %{data: %{service_id: service.id}})
+    end
+  end
+
+
+  def delete(conn, %{"service" => %{"id" => id}}, _current_user) do
+    with  {:ok, service} <- ServiceContext.delete_service(id) do
+      conn
+      |> render("show.json", service: service)
+    end
+  end
+
+  def action(conn, _) do
+    args = [conn, conn.params, conn.assigns.current_user]
+    apply(__MODULE__, action_name(conn), args)
+  end
 end

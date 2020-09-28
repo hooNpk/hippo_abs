@@ -6,6 +6,8 @@ defmodule HippoAbsWeb.Plugs.Authorization do
   alias Pow.{Config, Plug, Store.CredentialsCache}
   alias PowPersistentSession.Store.PersistentSessionCache
 
+  require Logger
+
   @doc """
   Fetches the user from access token.
   """
@@ -37,11 +39,16 @@ defmodule HippoAbsWeb.Plugs.Authorization do
       |> Conn.put_private(:api_access_token, sign_token(conn, access_token, config))
       |> Conn.put_private(:api_renewal_token, sign_token(conn, renewal_token, config))
 
-    # ttl = Keyword.fetch!(Application.fetch_env!(:hippo_abs, :pow), :ttl)
-    # store_config = store_config |> Keyword.put_new(:ttl, ttl)
+    credentials_store =
+      store_config
+      |> Keyword.put(:ttl, Keyword.fetch!(Application.fetch_env!(:hippo_abs, :pow), :credential_ttl))
 
-    CredentialsCache.put(store_config, access_token, {user, [renewal_token: renewal_token]})
-    PersistentSessionCache.put(store_config, renewal_token, {[id: user.id], [access_token: access_token]})
+    persistent_store =
+      store_config
+      |> Keyword.put(:ttl, Keyword.fetch!(Application.fetch_env!(:hippo_abs, :pow), :renewal_ttl))
+
+    CredentialsCache.put(credentials_store, access_token, {user, [renewal_token: renewal_token]})
+    PersistentSessionCache.put(persistent_store, renewal_token, {[id: user.id], [access_token: access_token]})
 
     {conn, user}
   end

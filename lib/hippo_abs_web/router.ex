@@ -13,8 +13,6 @@ defmodule HippoAbsWeb.Router do
     plug :accepts, ["json"]
     plug HippoAbsWeb.Plugs.Authorization, otp_app: :hippo_abs,
       error_handler: Pow.Phoenix.PlugErrorHandler
-      # session_ttl_renewal: :timer.hours(24),
-      # credentials_cache_store: {Pow.Store.CredentialsCache, ttl: :timer.hours(24)}
   end
 
   pipeline :api_protected do
@@ -31,10 +29,9 @@ defmodule HippoAbsWeb.Router do
   scope "/api/v1", HippoAbsWeb, as: :api_v1 do
     pipe_through :api
 
+    # login, logout, renew
     resources "/registration", UserController, singleton: true, only: [:create]
-    # resources "/session", SessionController, singleton: true, only: [:create, :delete]
-    post "/session", SessionController, :create
-
+    resources "/session", SessionController, singleton: true, only: [:create, :delete]
     post "/session/renew", SessionController, :renew
   end
 
@@ -45,8 +42,14 @@ defmodule HippoAbsWeb.Router do
     get "/registration", UserController, :index
     delete "/registration", UserController, :delete
 
-    scope "/admin", HippoAbsWeb, as: :admin do
-      resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
+    resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
+    resources "/services", ServiceController, only: [:index, :create, :update, :delete]
+    get "/device/:device_id/services", ServiceController, :index
+
+    scope "/admin", as: :admin do
+      # resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
+      # resources "/users/:user_id/devices", DeviceController, only: [:index, :create, :update, :delete]
+
       resources "/farms", FarmController, only: [:index, :create, :update, :delete]
     end
   end

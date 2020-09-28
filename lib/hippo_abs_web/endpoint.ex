@@ -10,6 +10,15 @@ defmodule HippoAbsWeb.Endpoint do
     signing_salt: "/beyYtUT"
   ]
 
+  @pow_config [
+    otp_app: :hippo_abs,
+    repo: HippoAbs.Repo,
+    user: HippoAbs.Account.User,
+    current_user_assigns_key: :current_user,
+    session_key: "auth",
+    users_context: HippoAbs.Account #Pow.Ecto.Users
+  ]
+
   socket "/socket", HippoAbsWeb.UserSocket,
     websocket: true,
     longpoll: false
@@ -50,6 +59,6 @@ defmodule HippoAbsWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug Pow.Plug.Session, otp_app: :hippo_abs
+  plug Pow.Plug.Session, @pow_config
   plug HippoAbsWeb.Router
 end

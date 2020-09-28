@@ -74,3 +74,17 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+
+# Pow configuration
+config :hippo_abs, :pow,
+  user: HippoAbs.Account.User,
+  repo: HippoAbs.Repo,
+  users_context: HippoAbs.Account,
+  web_module: HippoAbsWeb,
+  credential_ttl: :timer.hours(1),
+  renewal_ttl: :timer.hours(3)
+
+
+# Arc config
+# config :arc, storage: Arc.Storage.Local

@@ -2,6 +2,12 @@ defmodule HippoAbs.Service.Farm do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {
+    Jason.Encoder, only: [
+      :id, :ip, :name, :inserted_at, :updated_at
+    ]
+  }
+
   schema "farms" do
     field :ip, :string
     field :name, :string

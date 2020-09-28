@@ -9,7 +9,20 @@ defmodule HippoAbs.Account.User do
   import Ecto.Changeset
   require Logger
 
-  @derive {Jason.Encoder, only: [:id, :name, :email, :type, :phonenum, :birth, :hospital_code, :gender]}
+  @derive {
+    Jason.Encoder, only: [
+      :id,
+      :name,
+      :email,
+      :type,
+      :phonenum,
+      :birth,
+      :hospital_code,
+      :gender,
+      :inserted_at,
+      :updated_at
+    ]
+  }
 
   schema "users" do
     field :name, :string

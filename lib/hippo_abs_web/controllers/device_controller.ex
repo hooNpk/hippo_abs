@@ -1,41 +1,39 @@
-defmodule HippoAbsWeb.FarmController do
+defmodule HippoAbsWeb.DeviceController do
   use HippoAbsWeb, :controller
   require Logger
 
-  alias HippoAbs.ServiceContext
+  alias HippoAbs.{ServiceContext, Account}
 
-  def index(conn, _params) do
-    conn
-    |> json(ServiceContext.list_farms())
+  action_fallback HippoAbsWeb.FallbackController
+
+  def index(conn, _param, current_user) do
+    with  user <- Account.get_user!(current_user.id),
+          # {:ok, devices} <- ServiceContext.list_devices(user) do
+          devices <- ServiceContext.list_devices(user) do
+            conn
+            |> render("index.json" ,%{data: %{devices: devices}})
+    end
   end
 
 
-  def create(conn, %{"device" => device_params}) do
-    case ServiceContext.create_device(device_params) do
-      {:ok, device} ->
-        conn
+  def create(conn, %{"device" => device_params}, current_user) do
+    with  {:ok, device} <- ServiceContext.create_device(current_user, device_params) do
+      conn
         |> render("show.json", %{data: %{device_id: device.id}})
-
-      {:error, changeset} ->
-        conn
-        |> put_view(HippoAbsWeb.ErrorView)
-        |> put_status(500)
-        |> render("error.json", changeset: changeset)
     end
   end
 
 
-  def delete(conn, %{"device" => %{"id" => id}}) do
-    case ServiceContext.delete_device(id) do
-      {:ok, device} ->
-        conn
-        |> render("show.json", device: device)
-      {:error, device} ->
-        conn
-        |> put_view(HippoAbsWeb.ErrorView)
-        |> put_status(500)
-        |> render("error.json", device: device)
+  def delete(conn, %{"device" => %{"id" => id}}, _current_user) do
+    with  {:ok, device}<- ServiceContext.delete_device(id) do
+      conn
+      |> render("show.json", device: device)
     end
   end
 
+
+  def action(conn, _) do
+    args = [conn, conn.params, conn.assigns.current_user]
+    apply(__MODULE__, action_name(conn), args)
+  end
 end
