@@ -2,6 +2,14 @@ defmodule HippoAbs.Service.Token do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias __MODULE__
+
+  @derive {
+    Jason.Encoder, only: [
+      :id, :token, :farm, :inserted_at, :updated_at
+    ]
+  }
+
   schema "tokens" do
     field :token, :string
     belongs_to :farm, HippoAbs.Service.Farm
@@ -10,8 +18,8 @@ defmodule HippoAbs.Service.Token do
   end
 
   @doc false
-  def changeset(service, attrs) do
-    service
+  def changeset(token \\ %Token{}, attrs) do
+    token
     |> cast(attrs, [:token])
     |> validate_required([:token])
     |> validate_length(:token, max: 64)

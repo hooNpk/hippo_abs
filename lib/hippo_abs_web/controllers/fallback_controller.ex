@@ -1,6 +1,8 @@
 defmodule HippoAbsWeb.FallbackController do
   use Phoenix.Controller
 
+  require Logger
+
   def call(conn, {:error, :not_found}) do
     conn
     |> put_status(:not_found)
@@ -28,7 +30,8 @@ defmodule HippoAbsWeb.FallbackController do
     |> json(%{error: %{code: 401, message: "Not authenticated"}})
   end
 
-  def call(conn, _) do
+  def call(conn, _msg) do
+    # IO.inspect(Process.info(self(), :current_stacktrace), label: "STACKTRACE")
     conn
     |> put_status(500)
     |> put_view(HippoAbsWeb.ErrorView)

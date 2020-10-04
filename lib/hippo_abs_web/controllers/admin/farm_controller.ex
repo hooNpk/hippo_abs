@@ -1,4 +1,4 @@
-defmodule HippoAbsWeb.FarmController do
+defmodule HippoAbsWeb.Admin.FarmController do
   use HippoAbsWeb, :controller
   require Logger
 
@@ -11,10 +11,16 @@ defmodule HippoAbsWeb.FarmController do
     |> json(ServiceContext.list_farms())
   end
 
+  def get_topics(conn, _params) do
+    conn
+    |> json(ServiceContext.list_tokens())
+  end
+
 
   def create(conn, %{"farm" => farm_params, "topics" => topics}) do
     Logger.warn(inspect topics)
-    with  {:ok, farm} <- ServiceContext.create_farm(farm_params, topics) do
+    with  {:ok, farm} <- ServiceContext.create_farm(farm_params),
+          :ok <- ServiceContext.create_token(farm.id, topics) do
       conn
       |> render("show.json", %{data: %{farm_id: farm.id}})
     end

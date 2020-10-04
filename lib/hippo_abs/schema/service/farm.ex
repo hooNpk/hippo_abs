@@ -21,5 +21,6 @@ defmodule HippoAbs.Service.Farm do
     farm
     |> cast(attrs, [:name, :ip])
     |> validate_required([:name, :ip])
+    |> unique_constraint([:ip, :name])
   end
 end

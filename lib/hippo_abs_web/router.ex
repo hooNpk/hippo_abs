@@ -50,6 +50,11 @@ defmodule HippoAbsWeb.Router do
     resources "/registration", UserController, singleton: true, only: [:create]
     resources "/session", SessionController, singleton: true, only: [:create, :delete]
     post "/session/renew", SessionController, :renew
+
+    # for rabbitmq http auth
+    post "/rabbitmq/auth/user", RabbitmqController, :auth_user
+    post "/rabbitmq/auth/topic", RabbitmqController, :auth_topic
+
   end
 
   scope "/api/v1/admin", HippoAbsWeb.Admin, as: :admin do
@@ -58,13 +63,13 @@ defmodule HippoAbsWeb.Router do
     resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
     resources "/services", ServiceController, only: [:index, :create, :update, :delete]
     resources "/farms", FarmController, only: [:index, :create, :update, :delete]
+
+    # for test
+    get "/topics", FarmController, :get_topics
   end
 
   scope "/api/v1", HippoAbsWeb, as: :api_v1 do
     pipe_through [:api, :api_protected, :pat_authorized]
-
-    post "/rabbitmq/auth/user", RabbitmqController, :auth_user
-    post "/rabbitmq/auth/topic", RabbitmqController, :auth_topic
 
     # Your protected API endpoints here
     get "/registration", UserController, :index

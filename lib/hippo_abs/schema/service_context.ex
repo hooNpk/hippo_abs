@@ -16,7 +16,11 @@ defmodule HippoAbs.ServiceContext do
 
   def list_devices(%Account.User{} = user), do: get_devices_by_user(user)
 
-  def list_farms, do: Repo.all(Farm)
+  def list_farms do
+    Farm
+    |> Repo.all()
+    |> Repo.preload(:tokens)
+  end
 
   def list_farms(device) do
     Ecto.assoc(device, :services)
@@ -89,7 +93,7 @@ defmodule HippoAbs.ServiceContext do
     |> Repo.insert()
   end
 
-  def create_farm(attrs, tokens) when is_list(tokens) do
+  def create_farm(attrs, tokens) do
     %Farm{}
     |> Farm.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:tokens, tokens)
@@ -102,10 +106,16 @@ defmodule HippoAbs.ServiceContext do
     |> Repo.insert(on_conflict: :nothing)
   end
 
-  def create_token(farm_id, %{token: _} = token) do
+  def create_token(farm_id, token) when is_map(token) do
     %Token{}
     |> Token.changeset(token, get_farm(farm_id))
     |> Repo.insert(on_conflict: :nothing)
+  end
+
+  def create_token(farm_id, tokens) when is_list(tokens) do
+    Enum.each(tokens, fn token ->
+      create_token(farm_id, token)
+    end)
   end
 
   def update_device(%Device{} = device, attrs) do

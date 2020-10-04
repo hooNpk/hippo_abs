@@ -9,5 +9,7 @@ defmodule HippoAbs.Repo.Migrations.CreateFarms do
       timestamps(type: :timestamptz)
     end
 
+    create unique_index(:farms, [:ip, :name])
+
   end
 end
