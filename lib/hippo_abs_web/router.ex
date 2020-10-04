@@ -9,20 +9,37 @@ defmodule HippoAbsWeb.Router do
     plug :put_secure_browser_headers
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
-    plug HippoAbsWeb.Plugs.Authorization, otp_app: :hippo_abs,
-      error_handler: Pow.Phoenix.PlugErrorHandler
-  end
-
-  pipeline :api_protected do
-    plug Pow.Plug.RequireAuthenticated, error_handler: HippoAbsWeb.Plugs.AuthErrorHandler
-  end
-
   scope "/", HippoAbsWeb do
     pipe_through :browser
 
     get "/", PageController, :index
+  end
+
+
+  pipeline :api do
+    plug :accepts, ["json"]
+    plug HippoAbsWeb.Plugs.Authentication, otp_app: :hippo_abs,
+      error_handler: Pow.Phoenix.PlugErrorHandler
+  end
+
+  pipeline :api_protected do
+    plug Pow.Plug.RequireAuthenticated, error_handler: HippoAbsWeb.FallbackController
+  end
+
+  pipeline :admin_authorized do
+    plug HippoAbsWeb.Plugs.RoleAuthorization, type: 0
+  end
+
+  pipeline :dev_authorized do
+    plug HippoAbsWeb.Plugs.RoleAuthorization, type: 1
+  end
+
+  pipeline :doc_authorized do
+    plug HippoAbsWeb.Plugs.RoleAuthorization, type: 2
+  end
+
+  pipeline :pat_authorized do
+    plug HippoAbsWeb.Plugs.RoleAuthorization, type: 3
   end
 
   # Other scopes may use custom stacks.
@@ -35,8 +52,19 @@ defmodule HippoAbsWeb.Router do
     post "/session/renew", SessionController, :renew
   end
 
+  scope "/api/v1/admin", HippoAbsWeb.Admin, as: :admin do
+    pipe_through [:api, :api_protected, :admin_authorized]
+
+    resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
+    resources "/services", ServiceController, only: [:index, :create, :update, :delete]
+    resources "/farms", FarmController, only: [:index, :create, :update, :delete]
+  end
+
   scope "/api/v1", HippoAbsWeb, as: :api_v1 do
-    pipe_through [:api, :api_protected]
+    pipe_through [:api, :api_protected, :pat_authorized]
+
+    post "/rabbitmq/auth/user", RabbitmqController, :auth_user
+    post "/rabbitmq/auth/topic", RabbitmqController, :auth_topic
 
     # Your protected API endpoints here
     get "/registration", UserController, :index
@@ -45,13 +73,6 @@ defmodule HippoAbsWeb.Router do
     resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
     resources "/services", ServiceController, only: [:index, :create, :update, :delete]
     get "/device/:device_id/services", ServiceController, :index
-
-    scope "/admin", as: :admin do
-      # resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
-      # resources "/users/:user_id/devices", DeviceController, only: [:index, :create, :update, :delete]
-
-      resources "/farms", FarmController, only: [:index, :create, :update, :delete]
-    end
   end
 
   # Enables LiveDashboard only for development

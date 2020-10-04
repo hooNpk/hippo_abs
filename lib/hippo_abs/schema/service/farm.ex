@@ -11,6 +11,7 @@ defmodule HippoAbs.Service.Farm do
   schema "farms" do
     field :ip, :string
     field :name, :string
+    has_many :tokens, HippoAbs.Service.Token
 
     timestamps([type: :utc_datetime_usec])
   end

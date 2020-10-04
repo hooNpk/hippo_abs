@@ -33,6 +33,7 @@ defmodule HippoAbsWeb.UserController do
       {:ok, user, conn} ->
         conn
         |> render("show.json", user: user)
+
       {:error, user, conn} ->
         conn
         |> put_view(HippoAbsWeb.ErrorView)

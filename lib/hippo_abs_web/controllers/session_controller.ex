@@ -3,7 +3,7 @@ defmodule HippoAbsWeb.SessionController do
 
   require Logger
 
-  alias HippoAbsWeb.Plugs.Authorization
+  alias HippoAbsWeb.Plugs.Authentication
 
 
   def create(conn, %{"user" => user_params}) do
@@ -27,7 +27,7 @@ defmodule HippoAbsWeb.SessionController do
     config = Pow.Plug.fetch_config(conn)
 
     conn
-    |> Authorization.renew(config)
+    |> Authentication.renew(config)
     |> case do
       {conn, nil} ->
         conn

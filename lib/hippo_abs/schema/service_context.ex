@@ -6,7 +6,7 @@ defmodule HippoAbs.ServiceContext do
   import Ecto.Query, warn: false
   alias HippoAbs.Repo
 
-  alias HippoAbs.Service.{Device, Farm, Service}
+  alias HippoAbs.Service.{Device, Farm, Token, Service}
   alias HippoAbs.Account
 
   require Logger
@@ -18,7 +18,22 @@ defmodule HippoAbs.ServiceContext do
 
   def list_farms, do: Repo.all(Farm)
 
-  def list_services, do: Repo.all(Service) |> Repo.preload(:device) |> Repo.preload(:farm)
+  def list_farms(device) do
+    Ecto.assoc(device, :services)
+    |> Repo.all()
+    |> Ecto.assoc(:farm)
+    |> Repo.all()
+  end
+
+  def list_tokens(device) do
+    list_farms(device)
+    |> Ecto.assoc(:tokens)
+    |> Repo.all()
+  end
+
+  def list_tokens, do: Repo.all(Token) |> Repo.preload(:farm)
+
+  def list_services, do: Repo.all(Service) |> Repo.preload([:farm, :device])
 
   def list_services(devices) when is_list(devices) do
     Enum.reduce(devices, [], fn (element, acc) ->
@@ -48,8 +63,15 @@ defmodule HippoAbs.ServiceContext do
 
   def get_farm(id), do: Repo.get(Farm, id)
 
+  def get_token(id), do: Repo.get(Token, id)
+
+  def get_tokens_by_farm(farm) do
+    Ecto.assoc(farm, :tokens)
+    |> Repo.all()
+  end
+
   def get_service(keyword) do
-    Repo.get_by(Service, keyword)
+    Repo.get_by(Service, keyword) # device_id: 1, farm_id: 1
     |> Repo.preload(:device)
     |> Repo.preload(:farm)
   end
@@ -61,15 +83,28 @@ defmodule HippoAbs.ServiceContext do
     |> Repo.insert()
   end
 
-  def create_farm(attrs \\ %{}) do
+  def create_farm(attrs) do
     %Farm{}
     |> Farm.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_farm(attrs, tokens) when is_list(tokens) do
+    %Farm{}
+    |> Farm.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:tokens, tokens)
     |> Repo.insert()
   end
 
   def create_service(device_id, farm_id) do
     %Service{}
     |> Service.changeset(get_device(device_id), get_farm(farm_id))
+    |> Repo.insert(on_conflict: :nothing)
+  end
+
+  def create_token(farm_id, %{token: _} = token) do
+    %Token{}
+    |> Token.changeset(token, get_farm(farm_id))
     |> Repo.insert(on_conflict: :nothing)
   end
 

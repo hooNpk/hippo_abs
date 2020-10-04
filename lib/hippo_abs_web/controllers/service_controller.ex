@@ -4,10 +4,11 @@ defmodule HippoAbsWeb.ServiceController do
 
   alias HippoAbs.{ServiceContext, Account}
 
+  action_fallback HippoAbsWeb.FallbackController
 
   def index(conn, %{"device_id" => device_id}, _current_user) do
-    with  device <- ServiceContext.get_device(device_id),
-          services <- ServiceContext.list_services(device) do
+    with  device when not is_nil(device) <- ServiceContext.get_device(device_id),
+          services when not is_nil(services) <- ServiceContext.list_services(device) do
             conn
             |> render("index.json" ,%{data: %{services: services}})
     end
@@ -16,9 +17,9 @@ defmodule HippoAbsWeb.ServiceController do
 
   def index(conn, params, current_user) do
     Logger.warn(inspect params)
-    with  user <- Account.get_user!(current_user.id),
-          devices <- ServiceContext.get_devices_by_user(user),
-          services <- ServiceContext.list_services(devices) do
+    with  user when not is_nil(user) <- Account.get_user(current_user.id),
+          devices when not is_nil(devices) <- ServiceContext.get_devices_by_user(user),
+          services when not is_nil(services) <- ServiceContext.list_services(devices) do
             conn
             |> render("index.json" ,%{data: %{services: services}})
     end

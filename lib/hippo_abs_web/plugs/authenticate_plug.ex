@@ -1,4 +1,4 @@
-defmodule HippoAbsWeb.Plugs.Authorization do
+defmodule HippoAbsWeb.Plugs.Authentication do
   @moduledoc false
   use Pow.Plug.Base
 

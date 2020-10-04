@@ -22,6 +22,12 @@ defmodule HippoAbsWeb.FallbackController do
     |> render("error.json", changeset: changeset)
   end
 
+  def call(conn, :not_authenticated) do
+    conn
+    |> put_status(401)
+    |> json(%{error: %{code: 401, message: "Not authenticated"}})
+  end
+
   def call(conn, _) do
     conn
     |> put_status(500)

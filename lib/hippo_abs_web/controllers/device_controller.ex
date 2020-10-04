@@ -7,11 +7,11 @@ defmodule HippoAbsWeb.DeviceController do
   action_fallback HippoAbsWeb.FallbackController
 
   def index(conn, _param, current_user) do
-    with  user <- Account.get_user!(current_user.id),
+    with  user when not is_nil(user) <- Account.get_user(current_user.id),
           # {:ok, devices} <- ServiceContext.list_devices(user) do
-          devices <- ServiceContext.list_devices(user) do
+          devices when not is_nil(devices) <- ServiceContext.list_devices(user) do
             conn
-            |> render("index.json" ,%{data: %{devices: devices}})
+            |> render("index.json", %{data: %{devices: devices}})
     end
   end
 
