@@ -18,7 +18,7 @@ defmodule HippoAbsWeb.PrescriptionController do
 
 
   def create(conn, %{"prescription" => prescription_params, "pills" => pills_params}, current_user) do
-    with  doctor when not is_nil(doctor) <- Account.get_user(1),  # default doctor
+    with  doctor when not is_nil(doctor) <- Account.get_user(2),  # default doctor
           {:ok, prescription} <- SyrupContext.create_prescription(current_user, doctor, prescription_params),
           :ok <- SyrupContext.create_pills(prescription, pills_params) do
       conn
