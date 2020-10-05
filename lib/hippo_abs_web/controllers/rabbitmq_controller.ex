@@ -33,4 +33,12 @@ defmodule HippoAbsWeb.RabbitmqController do
             end
     end
   end
+
+  def auth_vhost(conn, _) do
+    conn |> json("apply")
+  end
+
+  def auth_resource(conn, _) do
+    conn |> json("apply")
+  end
 end

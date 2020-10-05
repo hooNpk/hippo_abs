@@ -47,9 +47,10 @@ defmodule HippoAbs.Account.User do
     |> validate_number(:type, less_than_or_equal_to: 3, greater_than_or_equal_to: 0)
     |> change_user(attrs)
     |> change_doctor(attrs)
+    |> change_developer(attrs)
   end
 
-  def change_user(user_or_changeset, %{"type" => 2} = attrs) do
+  def change_user(user_or_changeset, %{"type" => 3} = attrs) do
     user_or_changeset
     |> cast(attrs, [:phonenum, :gender, :birth])
     |> validate_required([:phonenum, :gender, :birth])
@@ -58,13 +59,19 @@ defmodule HippoAbs.Account.User do
   end
   def change_user(user_or_changeset, _), do: user_or_changeset
 
-  def change_doctor(user_or_changeset, %{"type" => 3} = attrs) do
+  def change_doctor(user_or_changeset, %{"type" => 2} = attrs) do
     user_or_changeset
     |> cast(attrs, [:hospital_code])
     |> validate_required([:hospital_code])
     |> validate_number(:hospital_code, greater_than: 10, less_than: 99)
   end
   def change_doctor(user_or_changeset, _), do: user_or_changeset
+
+  def change_developer(user_or_changeset, %{"type" => 1} = _attrs), do: user_or_changeset
+  def change_developer(user_or_changeset, _), do: user_or_changeset
+
+  def change_admin(user_or_changeset, %{"type" => 0} = _attrs), do: user_or_changeset
+  def change_admin(user_or_changeset, _), do: user_or_changeset
 
   # defp put_password_hash(changeset) do
   #   case changeset do
