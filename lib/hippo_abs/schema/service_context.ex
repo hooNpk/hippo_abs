@@ -33,8 +33,6 @@ defmodule HippoAbs.ServiceContext do
     list_farms(device)
     |> Ecto.assoc(:tokens)
     |> Repo.all()
-
-    Repo.get()
   end
 
   def list_tokens, do: Repo.all(Token) |> Repo.preload(:farm)
