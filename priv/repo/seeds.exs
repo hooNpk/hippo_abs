@@ -11,17 +11,20 @@
 # and so on) as they will fail if something goes wrong.
 
 
-HippoAbs.Repo.insert!(%HippoAbs.Account.User{
-    name: "관리자",
-    email: "elixian@elixian.co.kr",
-    password: "12121212",
-    type: 0
+HippoAbs.Account.create_user(%HippoAbs.Account.User{
+    "name": "관리자",
+    "email": "elixian@elixian.co.kr",
+    "password": "12121212",
+    "password_confirmation": "12121212",
+    "type": 0,
 })
 
-HippoAbs.Repo.insert!(%HippoAbs.Account.User{
-    name: "의사 기본값",
-    email: "hospital@hospital.com",
-    password: "12121212",
-    type: 2,
-    hospital_code: 11
+
+HippoAbs.Account.create_user(%HippoAbs.Account.User{
+    "name": "화타",
+    "email": "hospital@gmail.com",
+    "password": "12121212",
+    "password_confirmation": "12121212",
+    "type": 2,
+    "hospital_code": 11
 })
