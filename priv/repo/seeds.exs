@@ -9,3 +9,25 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+
+HippoAbs.Repo.insert!(%HippoAbs.Account.User{
+    "user": {
+        "name": "관리자",
+        "email": "elixian@elixian.co.kr",
+        "password": "12121212",
+        "password_confirmation": "12121212",
+        "type": 0
+    }
+})
+
+HippoAbs.Repo.insert!(%HippoAbs.Account.User{
+    "user": {
+        "name": "의사 기본값",
+        "email": "hospital@hospital.com",
+        "password": "12121212",
+        "password_confirmation": "12121212",
+        "type": 2,
+        "hospital_code": 11
+    }
+})

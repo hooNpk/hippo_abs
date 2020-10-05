@@ -29,11 +29,18 @@ defmodule HippoAbs.ServiceContext do
     |> Repo.all()
   end
 
-  def list_tokens(device) do
+  def list_tokens(%Device{} = device) do
     list_farms(device)
     |> Ecto.assoc(:tokens)
     |> Repo.all()
   end
+
+  def list_tokens(%Farm{} = farm) do
+    farm
+    |> Ecto.assoc(:tokens)
+    |> Repo.all()
+  end
+
 
   def list_tokens, do: Repo.all(Token) |> Repo.preload(:farm)
 

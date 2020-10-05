@@ -2,7 +2,7 @@ defmodule HippoAbsWeb.ServiceController do
   use HippoAbsWeb, :controller
   require Logger
 
-  alias HippoAbs.{ServiceContext, Account}
+  alias HippoAbs.{ServiceContext}
 
   action_fallback HippoAbsWeb.FallbackController
 
@@ -17,7 +17,7 @@ defmodule HippoAbsWeb.ServiceController do
 
   def index(conn, params, current_user) do
     Logger.warn(inspect params)
-    with  user when not is_nil(user) <- Account.get_user(current_user.id),
+    with  user when not is_nil(user) <- current_user,
           devices when not is_nil(devices) <- ServiceContext.get_devices_by_user(user),
           services when not is_nil(services) <- ServiceContext.list_services(devices) do
             conn

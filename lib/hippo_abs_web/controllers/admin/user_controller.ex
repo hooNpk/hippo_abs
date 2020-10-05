@@ -1,4 +1,4 @@
-defmodule HippoAbsWeb.UserController do
+defmodule HippoAbsWeb.Admin.UserController do
   use HippoAbsWeb, :controller
   require Logger
 
@@ -26,7 +26,7 @@ defmodule HippoAbsWeb.UserController do
     end
   end
 
-  def delete(conn, _params, _current_user) do
+  def delete(conn, _params) do
     conn
     |> Pow.Plug.delete_user()
     |> case do
@@ -40,17 +40,6 @@ defmodule HippoAbsWeb.UserController do
         |> put_status(500)
         |> render("error.json", user: user)
     end
-  end
-
-
-  def show(conn, _params, current_user) do
-    conn |> render("show.json", %{user: current_user})
-  end
-
-
-  def action(conn, _) do
-    args = [conn, conn.params, conn.assigns.current_user]
-    apply(__MODULE__, action_name(conn), args)
   end
 
 end

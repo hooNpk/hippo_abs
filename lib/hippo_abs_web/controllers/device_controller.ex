@@ -2,12 +2,13 @@ defmodule HippoAbsWeb.DeviceController do
   use HippoAbsWeb, :controller
   require Logger
 
-  alias HippoAbs.{ServiceContext, Account}
+  alias HippoAbs.{ServiceContext}
 
   action_fallback HippoAbsWeb.FallbackController
 
   def index(conn, _param, current_user) do
-    with  user when not is_nil(user) <- Account.get_user(current_user.id),
+    with  user when not is_nil(user) <- current_user,
+    # with  user when not is_nil(user) <- Account.get_user(current_user.id),
           # {:ok, devices} <- ServiceContext.list_devices(user) do
           devices when not is_nil(devices) <- ServiceContext.list_devices(user) do
             conn

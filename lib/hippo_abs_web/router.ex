@@ -46,8 +46,10 @@ defmodule HippoAbsWeb.Router do
   scope "/api/v1", HippoAbsWeb, as: :api_v1 do
     pipe_through :api
 
-    # login, logout, renew
+    # sign up
     resources "/registration", UserController, singleton: true, only: [:create]
+
+    # login, logout, renew
     resources "/session", SessionController, singleton: true, only: [:create, :delete]
     post "/session/renew", SessionController, :renew
 
@@ -62,24 +64,33 @@ defmodule HippoAbsWeb.Router do
   scope "/api/v1/admin", HippoAbsWeb.Admin, as: :admin do
     pipe_through [:api, :api_protected, :admin_authorized]
 
+    # register
+    resources "/registration", UserController, only: [:index]
+
     resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
     resources "/services", ServiceController, only: [:index, :create, :update, :delete]
     resources "/farms", FarmController, only: [:index, :create, :update, :delete]
 
-    # for test
-    get "/topics", FarmController, :get_topics
+
+    get "/device/:device_id/services", ServiceController, :index
   end
 
   scope "/api/v1", HippoAbsWeb, as: :api_v1 do
     pipe_through [:api, :api_protected, :pat_authorized]
 
     # Your protected API endpoints here
-    get "/registration", UserController, :index
-    delete "/registration", UserController, :delete
 
+    # sign out
+    resources "/registration", UserController, singleton: true, only: [:delete, :show]
+
+    # device
     resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
+
+    # service
     resources "/services", ServiceController, only: [:index, :create, :update, :delete]
-    get "/device/:device_id/services", ServiceController, :index
+
+    # prescription
+    resources "/prescriptions", PrescriptionController, only: [:index, :create, :update, :delete]
   end
 
   # Enables LiveDashboard only for development

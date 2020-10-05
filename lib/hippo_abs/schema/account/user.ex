@@ -32,6 +32,7 @@ defmodule HippoAbs.Account.User do
     field :birth, :date
     field :hospital_code, :integer
     has_many :device, HippoAbs.Service.Device
+    has_many :prescription, HippoAbs.Service.Syrup.Prescription
 
     pow_user_fields()
 
@@ -48,6 +49,7 @@ defmodule HippoAbs.Account.User do
     |> change_user(attrs)
     |> change_doctor(attrs)
     |> change_developer(attrs)
+    |> change_admin(attrs)
   end
 
   def change_user(user_or_changeset, %{"type" => 3} = attrs) do
