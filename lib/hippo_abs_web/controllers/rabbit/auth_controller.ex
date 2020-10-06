@@ -8,7 +8,6 @@ defmodule HippoAbsWeb.Rabbit.AuthController do
   # action_fallback HippoAbsWeb.FallbackController
 
 
-
   def auth_user(conn, %{"username" => email, "password" => password}) do
     with  user when not is_nil(user) <- Account.get_user_by_email(email),
           verified when is_boolean(verified) <- Pow.Ecto.Schema.Password.pbkdf2_verify(password, user.password_hash) do
@@ -18,8 +17,7 @@ defmodule HippoAbsWeb.Rabbit.AuthController do
         _ -> conn |> json("deny")
       end
     else
-      nil -> conn |> json("deny")
-      false -> conn |> json("deny")
+      _ -> conn |> json("deny")
     end
   end
 
@@ -29,16 +27,16 @@ defmodule HippoAbsWeb.Rabbit.AuthController do
           farms <- ServiceContext.list_farms(devices) do
           # topics <- ServiceContext.list_tokens(farms) do
 
-      Enum.any?(farms, fn farm ->
-        service_name = String.replace(farm.name, " ", "")
-        Enum.member?(["UP/" <> email <> "|" <> service_name, "DN/" <> email <> "|" <> service_name], routing_key)
-      end)
-      |> case do
-        true -> conn |> json("allow")
-        _ -> conn |> json("deny")
-      end
+            Enum.any?(farms, fn farm ->
+              service_name = String.replace(farm.name, [" ", ".", ","], "")
+              Enum.member?(["UP/" <> email <> "|" <> service_name, "DN/" <> email <> "|" <> service_name], routing_key)
+            end)
+            |> case do
+              true -> conn |> json("allow")
+              _ -> conn |> json("deny")
+            end
     else
-      nil -> conn |> json("deny")
+      _ -> conn |> json("deny")
     end
   end
 
