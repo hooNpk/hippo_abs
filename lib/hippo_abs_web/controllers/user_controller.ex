@@ -10,7 +10,7 @@ defmodule HippoAbsWeb.UserController do
   end
 
 
-  def create(conn, %{"user" => user_params}) do
+  def create(conn, %{"user" => user_params}, _current_user) do
     conn
     |> Pow.Plug.create_user(user_params)
     |> case do

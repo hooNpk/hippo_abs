@@ -54,10 +54,10 @@ defmodule HippoAbsWeb.Router do
     post "/session/renew", SessionController, :renew
 
     # for rabbitmq http auth
-    post "/rabbitmq/auth/user", RabbitmqController, :auth_user
-    post "/rabbitmq/auth/vhost", RabbitmqController, :auth_vhost
-    post "/rabbitmq/auth/resource", RabbitmqController, :auth_resource
-    post "/rabbitmq/auth/topic", RabbitmqController, :auth_topic
+    post "/rabbitmq/auth/user", Rabbit.AuthController, :auth_user
+    post "/rabbitmq/auth/vhost", Rabbit.AuthController, :auth_vhost
+    post "/rabbitmq/auth/resource", Rabbit.AuthController, :auth_resource
+    post "/rabbitmq/auth/topic", Rabbit.AuthController, :auth_topic
 
   end
 

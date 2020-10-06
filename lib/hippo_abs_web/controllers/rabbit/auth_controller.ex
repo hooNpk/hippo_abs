@@ -1,4 +1,4 @@
-defmodule HippoAbsWeb.RabbitmqController do
+defmodule HippoAbsWeb.Rabbit.AuthController do
   use HippoAbsWeb, :controller
   require Logger
 

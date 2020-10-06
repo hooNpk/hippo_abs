@@ -46,11 +46,15 @@ defmodule HippoAbs.SyrupContext do
   end
 
   def create_prescription(%Account.User{} = user, %Account.User{} = doctor, attrs \\ %{}) do
+    changes_prescription(user, doctor, attrs)
+    |> Repo.insert()
+  end
+
+  def changes_prescription(%Account.User{} = user, %Account.User{} = doctor, attrs \\ %{}) do
     %Prescription{}
     |> Prescription.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:user, user)
     |> Ecto.Changeset.put_assoc(:doctor, doctor)
-    |> Repo.insert()
   end
 
   def create_pill(prescription, attrs) do
@@ -59,10 +63,58 @@ defmodule HippoAbs.SyrupContext do
     |> Repo.insert(on_conflict: :nothing)
   end
 
+  def change_pill(prescription, attrs) do
+    %Pills{}
+    |> Pills.changeset(prescription, attrs)
+  end
+
   def create_pills(prescription, pills) when is_list(pills) do
     Enum.each(pills, fn pill ->
       create_pill(prescription, pill)
     end)
+  end
+
+  def create_pills_multi(prescription, pills_attrs) do
+    pills_attrs
+    |> Stream.map(fn pill ->
+      change_pill(prescription, pill)
+    end)
+    |> Stream.map(fn pill_changeset ->
+      key = "pill:#{pill_changeset.changes.name}"
+      Ecto.Multi.insert(Ecto.Multi.new(), key, pill_changeset)
+    end)
+    |> Enum.reduce(Ecto.Multi.new(), &Ecto.Multi.append/2)
+    |> Repo.transaction()
+    |> case do
+      {:ok, _pill} -> :ok
+      {:error, _key, changeset, _errors} -> {:error, changeset}
+    end
+  end
+
+  def create_prescription_and_pills(user, doctor, prescription_attrs, pills_attrs) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:insert_prescription, changes_prescription(user, doctor, prescription_attrs))
+    |> Ecto.Multi.run(:insert_pills, fn _repo, %{insert_prescription: prescription} ->
+      pills_attrs
+      |> Stream.map(fn pill ->
+        change_pill(prescription, pill)
+      end)
+      |> Stream.map(fn pill_changeset ->
+        key = "pill:#{pill_changeset.changes.name}"
+        Ecto.Multi.insert(Ecto.Multi.new(), key, pill_changeset)
+      end)
+      |> Enum.reduce(Ecto.Multi.new(), &Ecto.Multi.append/2)
+      |> Repo.transaction()
+      |> case do
+        {:ok, _pill} -> {:ok, prescription}
+        {:error, _key, changeset, _errors} -> {:error, changeset}
+      end
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, prescription} -> {:ok, prescription.insert_prescription}
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 
   def update_prescription(%Prescription{} = prescription, attrs) do
