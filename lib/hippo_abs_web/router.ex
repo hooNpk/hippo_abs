@@ -47,17 +47,17 @@ defmodule HippoAbsWeb.Router do
     pipe_through :api
 
     # sign up
-    resources "/registration", UserController, singleton: true, only: [:create]
+    resources "/registration", UserController, only: [:create]
 
     # login, logout, renew
-    resources "/session", SessionController, singleton: true, only: [:create, :delete]
-    post "/session/renew", SessionController, :renew
+    resources "/session", SessionController, only: [:create, :delete], singleton: true
+    post "/session/renew", SessionController, :renew, singleton: true
 
     # for rabbitmq http auth
-    post "/rabbitmq/auth/user", Rabbit.AuthController, :auth_user
-    post "/rabbitmq/auth/vhost", Rabbit.AuthController, :auth_vhost
-    post "/rabbitmq/auth/resource", Rabbit.AuthController, :auth_resource
-    post "/rabbitmq/auth/topic", Rabbit.AuthController, :auth_topic
+    post "/rabbitmq/auth/user", Rabbit.AuthController, :auth_user, singleton: true
+    post "/rabbitmq/auth/vhost", Rabbit.AuthController, :auth_vhost, singleton: true
+    post "/rabbitmq/auth/resource", Rabbit.AuthController, :auth_resource, singleton: true
+    post "/rabbitmq/auth/topic", Rabbit.AuthController, :auth_topic, singleton: true
 
   end
 
@@ -81,7 +81,7 @@ defmodule HippoAbsWeb.Router do
     # Your protected API endpoints here
 
     # sign out
-    resources "/registration", UserController, singleton: true, only: [:delete, :show]
+    resources "/registration", UserController, only: [:delete, :show], singleton: true
 
     # device
     resources "/devices", DeviceController, only: [:index, :create, :update, :delete]

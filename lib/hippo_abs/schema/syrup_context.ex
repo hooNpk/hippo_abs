@@ -95,6 +95,7 @@ defmodule HippoAbs.SyrupContext do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:insert_prescription, changes_prescription(user, doctor, prescription_attrs))
     |> Ecto.Multi.run(:insert_pills, fn _repo, %{insert_prescription: prescription} ->
+
       pills_attrs
       |> Stream.map(fn pill ->
         change_pill(prescription, pill)
@@ -107,13 +108,13 @@ defmodule HippoAbs.SyrupContext do
       |> Repo.transaction()
       |> case do
         {:ok, _pill} -> {:ok, prescription}
-        {:error, _key, changeset, _errors} -> {:error, changeset}
+        {:error, _failed_operation, failed_value, _changes_so_far} -> {:error, failed_value}
       end
     end)
     |> Repo.transaction()
     |> case do
       {:ok, prescription} -> {:ok, prescription.insert_prescription}
-      {:error, changeset} -> {:error, changeset}
+      {:error, _failed_operation, failed_value, _changes_so_far} -> {:error, failed_value}
     end
   end
 

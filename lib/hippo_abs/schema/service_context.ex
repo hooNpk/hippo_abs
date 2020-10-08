@@ -19,7 +19,7 @@ defmodule HippoAbs.ServiceContext do
   def list_farms do
     Farm
     |> Repo.all()
-    |> Repo.preload(:tokens)
+    # |> Repo.preload(:tokens)
   end
 
   def list_farms(device) do
