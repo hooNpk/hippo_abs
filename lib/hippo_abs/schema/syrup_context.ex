@@ -6,7 +6,7 @@ defmodule HippoAbs.SyrupContext do
   import Ecto.Query, warn: false
   alias HippoAbs.Repo
 
-  alias HippoAbs.Service.Syrup.{Prescription, Pills}
+  alias HippoAbs.Service.Syrup.{Prescription, Pills, Drugs}
   alias HippoAbs.Account
 
   require Logger
@@ -25,6 +25,11 @@ defmodule HippoAbs.SyrupContext do
   def list_pills(prescription) do
     Ecto.assoc(prescription, :pills)
     |> Repo.all()
+  end
+
+  def list_drugs(term, limit) do
+    query = from d in Drugs, where: like(d.item_nm, ^"%#{term}%"), limit: ^limit
+    Repo.all(query)
   end
 
 

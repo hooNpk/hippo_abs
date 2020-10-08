@@ -28,3 +28,11 @@ HippoAbs.Account.create_user(%{
     "type": 2,
     "hospital_code": 11
 })
+
+
+HippoAbs.ServiceContext.create_farm(%{
+    "farm": {
+        "ip": "127.0.0.1",
+        "name": "Syrup 서비스"
+    }
+})

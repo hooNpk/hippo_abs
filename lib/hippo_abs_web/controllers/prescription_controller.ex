@@ -16,6 +16,14 @@ defmodule HippoAbsWeb.PrescriptionController do
     end
   end
 
+  def search_drug(conn, %{"term" => term, "limit" => limit}, current_user) do
+    with  user when not is_nil(user) <- current_user,
+          drugs when not is_nil(drugs) <- SyrupContext.list_drugs(term, limit) do
+            conn
+            |> render("index.json" ,%{data: %{drugs: drugs}})
+    end
+  end
+
 
   # def create(conn, %{"prescription" => prescription_params, "pills" => pills_params}, current_user) do
   #   with  doctor when not is_nil(doctor) <- Account.get_user(2),  # default doctor

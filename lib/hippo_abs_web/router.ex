@@ -79,6 +79,8 @@ defmodule HippoAbsWeb.Router do
     pipe_through [:api, :api_protected, :pat_authorized]
 
     # Your protected API endpoints here
+    # search drug
+    post "/drugs", PrescriptionController, :search_drug
 
     # sign out
     resources "/registration", UserController, only: [:delete, :show], singleton: true

@@ -18,4 +18,9 @@ defmodule HippoAbsWeb.PrescriptionView do
     Logger.debug("prescriptions added successfully #{inspect prescriptions}")
     %{data: %{prescriptions: prescriptions}}
   end
+
+  def render("index.json", %{data: %{drugs: drugs}}) do
+    Logger.debug("search drugs successfully #{inspect drugs}")
+    %{data: %{drugs: drugs}}
+  end
 end
