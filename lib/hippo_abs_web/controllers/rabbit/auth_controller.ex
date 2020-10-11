@@ -28,7 +28,7 @@ defmodule HippoAbsWeb.Rabbit.AuthController do
           # topics <- ServiceContext.list_tokens(farms) do
 
             Enum.any?(farms, fn farm ->
-              service_name = String.replace(farm.name, [" ", ".", ","], "")
+              service_name = String.replace(farm.name, [" ", ".", ",", "/", "|"], "")
               Enum.member?(["UP/" <> email <> "|" <> service_name, "DN/" <> email <> "|" <> service_name], routing_key)
             end)
             |> case do
