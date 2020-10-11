@@ -80,7 +80,8 @@ defmodule HippoAbsWeb.Router do
 
     # Your protected API endpoints here
     # search drug
-    post "/drugs", PrescriptionController, :search_drug
+    post "/drugs", PrescriptionController, :index_drugs
+    get "/drug/:id", PrescriptionController, :show_drug
 
     # sign out
     resources "/registration", UserController, only: [:delete, :show], singleton: true

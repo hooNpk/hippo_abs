@@ -8,6 +8,11 @@ defmodule HippoAbsWeb.PrescriptionView do
     %{data: %{prescription_id: prescription_id}}
   end
 
+  def render("show.json", %{data: %{drug: drug}}) do
+    Logger.debug("drug  successfully #{drug.item_nm}")
+    %{data: %{drug: drug}}
+  end
+
   # TODO
   def render("show.json", %{prescription: prescription}) do
     Logger.debug("prescription added successfully #{prescription.id}")

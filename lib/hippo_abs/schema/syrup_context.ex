@@ -27,11 +27,24 @@ defmodule HippoAbs.SyrupContext do
     |> Repo.all()
   end
 
-  def list_drugs(term, limit) do
-    query = from d in Drugs, where: like(d.item_nm, ^"%#{term}%"), limit: ^limit
-    Repo.all(query)
+  def list_drugs(term, limit, offset) do
+      query =
+        from d in Drugs,
+          where: like(d.item_nm, ^"%#{term}%"),
+          limit: ^limit,
+          offset: ^offset,
+          select: map(d, [:id, :item_nm, :distributor]),
+          order_by: [asc: :id]
+      Repo.all(query)
+
+      # Drugs
+      # |> where([d], like(d.item_nm, ^"%#{term}%"))
+      # |> limit(^limit)
+      # |> select([:id, :item_nm])
+      # |> Repo.all()
   end
 
+  def get_drug(id), do: Drugs |> Repo.get(id)
 
   def get_prescription(id), do: Repo.get(Prescription, id) |> Repo.preload(:pills)
 

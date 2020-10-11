@@ -12,15 +12,23 @@ defmodule HippoAbsWeb.PrescriptionController do
     with  user when not is_nil(user) <- current_user,
           prescriptions when not is_nil(prescriptions) <- SyrupContext.list_prescriptions(user) do
             conn
-            |> render("index.json" ,%{data: %{prescriptions: prescriptions}})
+            |> render("index.json", %{data: %{prescriptions: prescriptions}})
     end
   end
 
-  def search_drug(conn, %{"term" => term, "limit" => limit}, current_user) do
+  def index_drugs(conn, %{"term" => term, "limit" => limit, "offset" => offset}, current_user) do
     with  user when not is_nil(user) <- current_user,
-          drugs when not is_nil(drugs) <- SyrupContext.list_drugs(term, limit) do
+          drugs when not is_nil(drugs) <- SyrupContext.list_drugs(term, limit, offset) do
             conn
-            |> render("index.json" ,%{data: %{drugs: drugs}})
+            |> render("index.json", %{data: %{drugs: drugs}})
+    end
+  end
+
+  def show_drug(conn, %{"id" => id}, current_user) do
+    with  user when not is_nil(user) <- current_user,
+          drug when not is_nil(drug) <- SyrupContext.get_drug(id) do
+            conn
+            |> render("show.json", %{data: %{drug: drug}})
     end
   end
 

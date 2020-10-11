@@ -4,6 +4,7 @@ defmodule HippoAbs.Service.Syrup.Drugs do
 
   @derive {
     Jason.Encoder, only: [
+      :id,
       :appearance,
       :classification,
       :classification_cd,
