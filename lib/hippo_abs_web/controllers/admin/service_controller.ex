@@ -29,7 +29,7 @@ defmodule HippoAbsWeb.Admin.ServiceController do
   def create(conn, %{"service" => %{"device_id" => did, "farm_id" => fid}}, _current_user) do
     with  {:ok, service} <- ServiceContext.create_service(did, fid) do
       conn
-      |> render("show.json", %{data: %{service_id: service.id}})
+      |> render("show.json", %{data: %{service_subscribe_id: service.id}})
     end
   end
 

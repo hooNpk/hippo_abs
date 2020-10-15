@@ -20,7 +20,7 @@ defmodule HippoAbsWeb.DeviceController do
   def create(conn, %{"device" => device_params}, current_user) do
     with  {:ok, device} <- ServiceContext.create_device(current_user, device_params) do
       conn
-        |> render("show.json", %{data: %{device_id: device.id}})
+        |> render("show.json", %{data: %{id: device.id}})
     end
   end
 

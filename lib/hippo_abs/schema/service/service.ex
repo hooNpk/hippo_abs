@@ -17,14 +17,14 @@ defmodule HippoAbs.Service.Service do
   @doc false
   def changeset(service, attrs) do
     service
-    |> cast(attrs, [])
-    |> validate_required([])
+    |> cast(attrs, [:device_id, :farm_id])
+    |> validate_required([:device_id, :farm_id])
     |> unique_constraint([:device_id, :farm_id], name: :services_farm_id_device_id_index)
   end
 
   def changeset(service, device, farm) do
     service
-    |> changeset(%{})
+    |> changeset(%{device_id: device.id, farm_id: farm.id})
     |> put_assoc(:device, device)
     |> put_assoc(:farm, farm)
   end

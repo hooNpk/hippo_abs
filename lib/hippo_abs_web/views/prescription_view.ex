@@ -8,14 +8,8 @@ defmodule HippoAbsWeb.PrescriptionView do
     %{data: %{prescription_id: prescription_id}}
   end
 
-  def render("show.json", %{data: %{drug: drug}}) do
-    Logger.debug("drug  successfully #{drug.item_nm}")
-    %{data: %{drug: drug}}
-  end
-
-  # TODO
-  def render("show.json", %{prescription: prescription}) do
-    Logger.debug("prescription added successfully #{prescription.id}")
+  def render("show.json", %{data: %{prescription: prescription}}) do
+    Logger.debug("prescription added successfully #{inspect prescription}")
     %{data: %{prescription: prescription}}
   end
 
@@ -24,8 +18,13 @@ defmodule HippoAbsWeb.PrescriptionView do
     %{data: %{prescriptions: prescriptions}}
   end
 
-  def render("index.json", %{data: %{drugs: drugs}}) do
-    Logger.debug("search drugs successfully #{inspect drugs}")
-    %{data: %{drugs: drugs}}
+  def render("show.json", %{data: %{dosage: dosage}}) do
+    Logger.debug("search drugs successfully #{inspect dosage}")
+    %{data: %{dosage: dosage}}
+  end
+
+  def render("index.json", %{data: %{dosage: dosage}}) do
+    Logger.debug("dosage added successfully #{inspect dosage}")
+    %{data: %{dosage: dosage}}
   end
 end

@@ -3,9 +3,9 @@ defmodule HippoAbsWeb.ServiceView do
 
   require Logger
 
-  def render("show.json", %{data: %{service_id: service_id}}) do
+  def render("show.json", %{data: %{service_subscribe_id: service_id}}) do
     Logger.debug("service added successfully #{service_id}")
-    %{data: %{service_id: service_id}}
+    %{data: %{service_subscribe_id: service_id}}
   end
 
   # TODO

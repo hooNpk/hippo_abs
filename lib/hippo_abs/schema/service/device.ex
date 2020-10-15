@@ -22,5 +22,6 @@ defmodule HippoAbs.Service.Device do
     device
     |> cast(attrs, [:name, :device_id])
     |> validate_required([:name, :device_id])
+    |> unique_constraint([:name, :device_id], name: :devices_user_id_device_id_index)
   end
 end

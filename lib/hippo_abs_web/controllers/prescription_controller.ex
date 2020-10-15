@@ -7,54 +7,36 @@ defmodule HippoAbsWeb.PrescriptionController do
   action_fallback HippoAbsWeb.FallbackController
 
 
-  def index(conn, params, current_user) do
-    Logger.warn(inspect params)
+  def index(conn, _params, current_user) do
+    # Logger.warn(inspect params)
     with  user when not is_nil(user) <- current_user,
-          prescriptions when not is_nil(prescriptions) <- SyrupContext.list_prescriptions(user) do
+          prescriptions when prescriptions != [] <- SyrupContext.list_prescriptions(user) do
             conn
             |> render("index.json", %{data: %{prescriptions: prescriptions}})
     end
   end
 
-  def index_drugs(conn, %{"term" => term, "limit" => limit, "offset" => offset}, current_user) do
-    with  user when not is_nil(user) <- current_user,
-          drugs when not is_nil(drugs) <- SyrupContext.list_drugs(term, limit, offset) do
-            conn
-            |> render("index.json", %{data: %{drugs: drugs}})
-    end
-  end
-
-  def show_drug(conn, %{"id" => id}, current_user) do
-    with  user when not is_nil(user) <- current_user,
-          drug when not is_nil(drug) <- SyrupContext.get_drug(id) do
-            conn
-            |> render("show.json", %{data: %{drug: drug}})
-    end
-  end
-
-
-  # def create(conn, %{"prescription" => prescription_params, "pills" => pills_params}, current_user) do
-  #   with  doctor when not is_nil(doctor) <- Account.get_user(2),  # default doctor
-  #         {:ok, prescription} <- SyrupContext.create_prescription(current_user, doctor, prescription_params),
-  #         :ok <- SyrupContext.create_pills(prescription, pills_params) do
-  #     conn
-  #     |> render("show.json", %{data: %{prescription_id: prescription.id}})
-  #   end
-  # end
-
-  def create(conn, %{"prescription" => prescription_params, "pills" => pills_params}, current_user) do
+  def create(conn, %{"prescription" => prescription_params, "dosage" => dosage_params}, current_user) do
     with  doctor when not is_nil(doctor) <- Account.get_user(2),  # default doctor
-          {:ok, prescription} <- SyrupContext.create_prescription_and_pills(current_user, doctor, prescription_params, pills_params) do
+          {:ok, prescription} <- SyrupContext.create_prescription_and_dosage(current_user, doctor, prescription_params, dosage_params) do
+            Logger.warn(inspect prescription)
             conn
-            |> render("show.json", %{data: %{prescription_id: prescription.id}})
+            |> render("show.json", %{data: %{prescription: prescription}})
     end
   end
 
+  def show(conn, %{"id" => id}, current_user) do
+    with  user when not is_nil(user) <- current_user,
+          prescription when prescription != [] <- SyrupContext.get_prescription_by(user, id) do
+            conn
+            |> render("show.json", %{data: %{prescription: prescription}})
+    end
+  end
 
   def delete(conn, %{"id" => id}, _current_user) do
     with  {:ok, prescription} <- SyrupContext.delete_prescription(String.to_integer(id)) do
       conn
-      |> render("show.json", prescription: prescription)
+      |> render("show.json", %{data: %{prescription: prescription}})
     end
   end
 

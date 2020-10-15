@@ -80,20 +80,23 @@ defmodule HippoAbsWeb.Router do
 
     # Your protected API endpoints here
     # search drug
-    post "/drugs", PrescriptionController, :index_drugs
-    get "/drug/:id", PrescriptionController, :show_drug
+    post "/drugs", DrugController, :search
+    get "/drug/:id", DrugController, :show
 
     # sign out
     resources "/registration", UserController, only: [:delete, :show], singleton: true
-
     # device
     resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
-
     # service
     resources "/services", ServiceController, only: [:index, :create, :update, :delete]
-
     # prescription
-    resources "/prescriptions", PrescriptionController, only: [:index, :create, :update, :delete]
+    resources "/prescriptions", PrescriptionController, only: [:index, :show, :create, :update, :delete] do
+      resources "/dosage", DosageController, only: [:index, :show, :create, :update, :delete] do
+        resources "/drugs", DrugController, only: [:create, :index, :delete, :edit]
+      end
+    end
+    # get "/prescription/:id/dosage", PrescriptionController, :index_dosage
+    # resources "/drugref", DrugController, only: [:create, :index, :delete, :edit]
   end
 
   # Enables LiveDashboard only for development

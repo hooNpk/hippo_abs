@@ -4,7 +4,7 @@ defmodule HippoAbs.Service.Syrup.Prescription do
 
   @derive {
     Jason.Encoder, only: [
-      :id, :user_id, :doctor_id, :pills, :start_date, :end_date, :inserted_at, :updated_at
+      :id, :user_id, :doctor_id, :dosage, :start_date, :end_date, :inserted_at, :updated_at
     ]
   }
 
@@ -13,7 +13,7 @@ defmodule HippoAbs.Service.Syrup.Prescription do
     field :start_date, :date
     belongs_to :user, HippoAbs.Account.User, foreign_key: :user_id
     belongs_to :doctor, HippoAbs.Account.User, foreign_key: :doctor_id
-    has_many :pills, HippoAbs.Service.Syrup.Pills
+    has_many :dosage, HippoAbs.Service.Syrup.Dosage
 
     timestamps([type: :utc_datetime_usec])
   end

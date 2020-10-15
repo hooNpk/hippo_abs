@@ -3,9 +3,9 @@ defmodule HippoAbsWeb.Admin.DeviceView do
 
   require Logger
 
-  def render("show.json", %{data: %{device_id: device_id}}) do
+  def render("show.json", %{data: %{id: device_id}}) do
     Logger.debug("device added successfully #{device_id}")
-    %{data: %{device_id: device_id}}
+    %{data: %{id: device_id}}
   end
 
   # TODO

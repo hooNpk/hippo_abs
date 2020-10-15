@@ -30,6 +30,18 @@ defmodule HippoAbsWeb.FallbackController do
     |> json(%{error: %{code: 401, message: "Not authenticated"}})
   end
 
+  def call(conn, []) do
+    conn
+    |> put_status(401)
+    |> json(%{error: %{code: 404, message: "list is empty"}})
+  end
+
+  def call(conn, nil) do
+    conn
+    |> put_status(401)
+    |> json(%{error: %{code: 404, message: "result is empty"}})
+  end
+
   def call(conn, _msg) do
     # IO.inspect(Process.info(self(), :current_stacktrace), label: "STACKTRACE")
     conn
