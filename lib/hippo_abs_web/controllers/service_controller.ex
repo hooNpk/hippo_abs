@@ -45,6 +45,7 @@ defmodule HippoAbsWeb.ServiceController do
     end
   end
 
+
   def action(conn, _) do
     args = [conn, conn.params, conn.assigns.current_user]
     apply(__MODULE__, action_name(conn), args)
