@@ -17,9 +17,11 @@ defmodule HippoAbsWeb.DosageController do
     end
   end
 
-  def create(conn, %{"prescription_id" => prescription_id, "dosage" => dosage_params}, _current_user) do
-    with  prescription <- SyrupContext.get_prescription(prescription_id),
-          {:ok, dosage} <- SyrupContext.create_dosage(prescription, dosage_params) do
+  def create(conn, %{"prescription_id" => prescription_id, "dosage" => dosage_params}, current_user) do
+    with  user when not is_nil(user) <- current_user,
+          prescription <- SyrupContext.get_prescription(prescription_id),
+          # {:ok, dosage} <- SyrupContext.create_dosage(prescription, dosage_params) do
+          {:ok, dosage} when dosage != [] <- SyrupContext.create_dosage_multi(prescription, dosage_params) do
             conn
             |> render("show.json", %{data: %{dosage: dosage}})
     end

@@ -129,7 +129,7 @@ end
     |> Enum.reduce(Ecto.Multi.new(), &Ecto.Multi.append/2)
     |> Repo.transaction()
     |> case do
-      {:ok, _pill} -> :ok
+      {:ok, dosage} -> {:ok, Enum.map(dosage, fn {_k, v} -> v.id end)}
       {:error, _key, changeset, _errors} -> {:error, changeset}
     end
   end

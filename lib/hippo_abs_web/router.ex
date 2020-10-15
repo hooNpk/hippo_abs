@@ -71,7 +71,6 @@ defmodule HippoAbsWeb.Router do
     resources "/services", ServiceController, only: [:index, :create, :update, :delete]
     resources "/farms", FarmController, only: [:index, :create, :update, :delete]
 
-
     get "/device/:device_id/services", ServiceController, :index
   end
 
@@ -85,18 +84,19 @@ defmodule HippoAbsWeb.Router do
 
     # sign out
     resources "/registration", UserController, only: [:delete, :show], singleton: true
+
     # device
     resources "/devices", DeviceController, only: [:index, :create, :update, :delete]
+
     # service
     resources "/services", ServiceController, only: [:index, :create, :update, :delete]
+
     # prescription
     resources "/prescriptions", PrescriptionController, only: [:index, :show, :create, :update, :delete] do
       resources "/dosage", DosageController, only: [:index, :show, :create, :update, :delete] do
         resources "/drugs", DrugController, only: [:create, :index, :delete, :edit]
       end
     end
-    # get "/prescription/:id/dosage", PrescriptionController, :index_dosage
-    # resources "/drugref", DrugController, only: [:create, :index, :delete, :edit]
   end
 
   # Enables LiveDashboard only for development
