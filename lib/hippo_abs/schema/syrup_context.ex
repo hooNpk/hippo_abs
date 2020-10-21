@@ -32,7 +32,7 @@ defmodule HippoAbs.SyrupContext do
   end
 
   def list_dosage_by(prescriptions) do
-    Logger.warn inspect prescriptions
+    # Logger.warn inspect prescriptions
 
     prescriptions
     |> Enum.map(fn prescription ->
@@ -179,7 +179,7 @@ end
     |> Enum.reduce(Ecto.Multi.new(), &Ecto.Multi.append/2)
     |> Repo.transaction()
     |> case do
-      {:ok, drugrefs} -> {:ok, Enum.map(drugrefs, fn {_k, v} -> v.drug_id end)}
+      {:ok, drugrefs} -> {:ok, Enum.map(drugrefs, fn {_k, v} -> v.id end)}
       {:error, _failed_operation, failed_value, _changes_so_far} -> {:error, failed_value}
     end
   end
