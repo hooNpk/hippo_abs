@@ -27,15 +27,15 @@ defmodule HippoAbsWeb.Router do
   end
 
   pipeline :admin_authorized do
-    plug HippoAbsWeb.Plugs.RoleAuthorization, type: 0
+    plug HippoAbsWeb.Plugs.RoleAuthorization, type: [0]
   end
 
   pipeline :dev_authorized do
-    plug HippoAbsWeb.Plugs.RoleAuthorization, type: 1
+    plug HippoAbsWeb.Plugs.RoleAuthorization, type: [1]
   end
 
   pipeline :doc_authorized do
-    plug HippoAbsWeb.Plugs.RoleAuthorization, type: 2
+    plug HippoAbsWeb.Plugs.RoleAuthorization, type: [2]
   end
 
   pipeline :pat_authorized do
