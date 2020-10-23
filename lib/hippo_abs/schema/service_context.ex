@@ -87,6 +87,15 @@ defmodule HippoAbs.ServiceContext do
     |> Repo.preload(:farm)
   end
 
+  def get_service_detail(service_type_cd) do
+    query =
+      from s in "service_type",
+        where: s.service_type_cd == ^service_type_cd,
+        select: map(s, [:id, :service_name, :service_type_cd, :description])
+
+    Repo.all(query)
+  end
+
   def create_device(%Account.User{} = user, attrs \\ %{}) do
     %Device{}
     |> Device.changeset(attrs)
@@ -107,9 +116,9 @@ defmodule HippoAbs.ServiceContext do
     |> Repo.insert()
   end
 
-  def create_service(device_id, farm_id) do
+  def create_service(device_id, farm_id, service_type_cd) do
     %Service{}
-    |> Service.changeset(get_device(device_id), get_farm(farm_id))
+    |> Service.changeset(get_device(device_id), get_farm(farm_id), service_type_cd)
     |> Repo.insert(on_conflict: :nothing)
   end
 
@@ -131,9 +140,9 @@ defmodule HippoAbs.ServiceContext do
     |> Repo.update()
   end
 
-  def update_service(%Service{} = service, [device_id: did, farm_id: fid]) do
+  def update_service(%Service{} = service, [device_id: did, farm_id: fid, service_type_cd: service_type_cd]) do
     service
-    |> Service.changeset(did, fid)
+    |> Service.changeset(did, fid, service_type_cd)
     |> Repo.update()
   end
 

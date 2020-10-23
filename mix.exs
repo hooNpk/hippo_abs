@@ -5,7 +5,7 @@ defmodule HippoAbs.MixProject do
     [
       app: :hippo_abs,
       version: "0.1.0",
-      elixir: "~> 1.10.4",
+      elixir: "~> 1.11.1",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -20,7 +20,7 @@ defmodule HippoAbs.MixProject do
   def application do
     [
       mod: {HippoAbs.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :mnesia]
     ]
   end
 
@@ -33,20 +33,20 @@ defmodule HippoAbs.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.4"},
+      {:phoenix, "~> 1.5.6"},
       {:phoenix_ecto, "~> 4.2"},
-      {:ecto_sql, "~> 3.4"},
-      {:postgrex, "~> 0.15.5"},
+      {:ecto_sql, "~> 3.5"},
+      {:postgrex, "~> 0.15.7"},
       {:phoenix_html, "~> 2.14"},
       {:phoenix_live_reload, "~> 1.2", only: [:dev, :stg]},
-      {:phoenix_live_dashboard, "~> 0.2.0"},
-      {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.3"},
+      {:phoenix_live_dashboard, "~> 0.3.2"},
+      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_poller, "~> 0.5"},
+      {:gettext, "~> 0.18"},
+      {:jason, "~> 1.2"},
+      {:plug_cowboy, "~> 2.4"},
       {:pbkdf2_elixir, "~> 1.2"},
-      {:pow, "~> 1.0.20"}
+      {:pow, "~> 1.0.21"},
     ]
   end
 

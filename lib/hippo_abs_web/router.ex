@@ -61,7 +61,7 @@ defmodule HippoAbsWeb.Router do
 
   end
 
-  scope "/api/v1/admin", HippoAbsWeb.Admin, as: :admin do
+  scope "/api/v1/admin", HippoAbsWeb.Admin, as: :admin_api_v1 do
     pipe_through [:api, :api_protected, :admin_authorized]
 
     # register

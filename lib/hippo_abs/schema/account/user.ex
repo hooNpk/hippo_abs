@@ -1,4 +1,18 @@
 defmodule HippoAbs.Account.User do
+    @moduledoc ~S"""
+    ## 회원 타입 구분
+
+    * 0: 관리자
+    * 1: 개발자
+    * 2: 의사
+    * 3: 환자
+    * 4: 임상실험 대상자
+
+    ## 각 회원 타입 별, 서비스 시나리오
+
+    TODO
+
+  """
   use Ecto.Schema
   use Pow.Ecto.Schema,
     user_id_field: :email,
@@ -39,18 +53,28 @@ defmodule HippoAbs.Account.User do
     timestamps([type: :utc_datetime_usec])
   end
 
+  @spec changeset(any, any) :: any
   def changeset(user_or_changeset, attrs) do
     user_or_changeset
     |> pow_changeset(attrs)
     |> cast(attrs, [:name, :type])
     |> validate_required([:name, :type])
     |> validate_length(:name, min: 2, max: 32)
-    |> validate_number(:type, less_than_or_equal_to: 3, greater_than_or_equal_to: 0)
+    |> validate_number(:type, less_than_or_equal_to: 4, greater_than_or_equal_to: 0)
+    |> change_trial(attrs)
     |> change_user(attrs)
     |> change_doctor(attrs)
     |> change_developer(attrs)
     |> change_admin(attrs)
   end
+
+  def change_trial(user_or_changeset, %{"type" => 4} = attrs) do
+    user_or_changeset
+    |> cast(attrs, [:gender, :birth])
+    |> validate_required([:gender, :birth])
+    |> validate_number(:gender, less_than_or_equal_to: 1, greater_than_or_equal_to: 0)
+  end
+  def change_trial(user_or_changeset, _), do: user_or_changeset
 
   def change_user(user_or_changeset, %{"type" => 3} = attrs) do
     user_or_changeset

@@ -1,0 +1,15 @@
+defmodule HippoAbs.Repo.Migrations.AlterUserColumnRenameEmail do
+  use Ecto.Migration
+
+  def up do
+    drop unique_index(:users, [:email])
+    rename table(:users), :email, to: :user_identifier
+    create unique_index(:users, [:user_identifier])
+  end
+
+  def down do
+    drop unique_index(:users, [:user_identifier])
+    rename table(:users), :user_identifier, to: :email
+    create unique_index(:users, [:email])
+  end
+end

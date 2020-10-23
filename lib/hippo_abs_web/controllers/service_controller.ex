@@ -27,9 +27,9 @@ defmodule HippoAbsWeb.ServiceController do
   end
 
 
-  def create(conn, %{"service" => %{"device_id" => did, "farm_id" => fid}}, current_user) do
+  def create(conn, %{"service" => %{"device_id" => did, "farm_id" => fid, "service_type_cd" => service_type_cd}}, current_user) do
     with  user when not is_nil(user) <- current_user,
-          {:ok, service} <- ServiceContext.create_service(did, fid),
+          {:ok, service} <- ServiceContext.create_service(did, fid, service_type_cd),
           id when not is_nil(id) <- service.id do
             conn
             |> render("show.json", %{data: %{service_subscribe_id: service.id}})

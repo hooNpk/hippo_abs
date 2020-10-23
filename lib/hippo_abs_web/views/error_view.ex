@@ -5,8 +5,12 @@ defmodule HippoAbsWeb.ErrorView do
 
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.
-  def render("500.html", _assigns) do
-    "Internal Server Error"
+  def render("500.json", _assigns) do
+    %{errors: %{message: "Internal Server Error"}}
+  end
+
+  def render("400.json", _assigns) do
+    %{errors: %{message: "Resource not found"}}
   end
 
   def render("error.json", %{changeset: params}) do
@@ -19,13 +23,6 @@ defmodule HippoAbsWeb.ErrorView do
     %{errors: reason}
   end
 
-  # By default, Phoenix returns the status message from
-  # the template name. For example, "404.html" becomes
-  # "Not Found".
-  def template_not_found(template, _assigns) do
-    Phoenix.Controller.status_message_from_template(template)
-  end
-
   defp translate_errors(changeset) do
     # Ecto.Changeset.traverse_errors(changeset, &translate_error/1)
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opt} ->
@@ -34,5 +31,12 @@ defmodule HippoAbsWeb.ErrorView do
       end)
       |> Map.put_new("msg", msg)
     end)
+  end
+
+  # By default, Phoenix returns the status message from
+  # the template name. For example, "404.html" becomes
+  # "Not Found".
+  def template_not_found(template, _assigns) do
+    Phoenix.Controller.status_message_from_template(template)
   end
 end

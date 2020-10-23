@@ -17,7 +17,7 @@ config :hippo_abs, HippoAbs.Repo,
 # with webpack to recompile .js and .css sources.
 config :hippo_abs, HippoAbsWeb.Endpoint,
   http: [port: 4000],
-  debug_errors: true,
+  debug_errors: false,
   code_reloader: true,
   check_origin: false,
   watchers: [
@@ -74,4 +74,3 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
-
