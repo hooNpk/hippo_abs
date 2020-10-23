@@ -11,7 +11,7 @@
 # and so on) as they will fail if something goes wrong.
 
 
-HippoAbs.Account.create_user(%{
+HippoAbs.Account.create(%{
     "name" => "관리자",
     "uid" => "elixian@elixian.co.kr",
     "password" => "12121212",
@@ -19,7 +19,7 @@ HippoAbs.Account.create_user(%{
     "type" => 0,
 })
 
-HippoAbs.Account.create_user(%{
+HippoAbs.Account.create(%{
     "name" => "화타",
     "uid" => "hospital@gmail.com",
     "password" => "12121212",
