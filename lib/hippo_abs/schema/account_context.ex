@@ -17,29 +17,19 @@ defmodule HippoAbs.Account do
 
   def get_user(id), do: Repo.get(User, id)
 
-  def get_user_by_email(email), do: Repo.get_by(User, email: email)
+  def get_user_by_uid(uid), do: Repo.get_by(User, uid: uid)
 
   def authenticate(params) do
     pow_authenticate(params)
   end
 
-  def create_user(%{"type" => 4} = attrs) do
-    new_attrs =
-      attrs
-      |> Enum.reduce(%{}, fn
-          {k, v}, map when k === "clinical_trial_number" ->
-            pattern = [" ", "-", ","]
-            fraud_email = String.replace("#{v}", pattern, "")  <> "@clinic.trial"
-            Map.put_new(map, "email", fraud_email)
-          {k, v}, map -> Map.put_new(map, k, v)
-        end)
+  def create(attrs) do
+    {_value, attrs} =
+      Map.get_and_update(attrs, "uid", fn value ->
+        {value, String.downcase(value)}
+      end)
 
-    Logger.warn("HippoAbs.Account.create_user(#{inspect new_attrs})")
-    pow_create(new_attrs)
-  end
-
-  def create_user(attrs) do
-    Logger.warn("HippoAbs.Account.create(#{inspect attrs})")
+    Logger.warn("HippoAbs.Account.create_user(#{inspect attrs})")
     pow_create(attrs)
   end
 

@@ -19,7 +19,7 @@ defmodule HippoAbsWeb.SessionController do
         conn
         |> put_view(HippoAbsWeb.ErrorView)
         |> put_status(500)
-        |> render("error.json", error: %{status: 401, message: "Invalid email or password"})
+        |> render("error.json", error: %{status: 401, message: "Invalid id or password"})
     end
   end
 

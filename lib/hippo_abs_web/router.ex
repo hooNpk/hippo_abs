@@ -39,7 +39,7 @@ defmodule HippoAbsWeb.Router do
   end
 
   pipeline :pat_authorized do
-    plug HippoAbsWeb.Plugs.RoleAuthorization, type: 3
+    plug HippoAbsWeb.Plugs.RoleAuthorization, type: [3, 4]
   end
 
   # Other scopes may use custom stacks.

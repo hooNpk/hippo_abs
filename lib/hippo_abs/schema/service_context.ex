@@ -119,7 +119,8 @@ defmodule HippoAbs.ServiceContext do
   def create_service(device_id, farm_id, service_type_cd) do
     %Service{}
     |> Service.changeset(get_device(device_id), get_farm(farm_id), service_type_cd)
-    |> Repo.insert(on_conflict: :nothing)
+    |> Repo.insert()
+    # |> Repo.insert(on_conflict: :nothing)
   end
 
   def create_token(farm_id, token) when is_map(token) do

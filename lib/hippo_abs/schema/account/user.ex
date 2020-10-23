@@ -14,8 +14,9 @@ defmodule HippoAbs.Account.User do
 
   """
   use Ecto.Schema
+
   use Pow.Ecto.Schema,
-    user_id_field: :email,
+    user_id_field: :uid,
     password_hash_methods: {&Pow.Ecto.Schema.Password.pbkdf2_hash/1, &Pow.Ecto.Schema.Password.pbkdf2_verify/2},
     password_min_length: 8,
     password_max_length: 32
@@ -27,7 +28,7 @@ defmodule HippoAbs.Account.User do
     Jason.Encoder, only: [
       :id,
       :name,
-      :email,
+      :uid,
       :type,
       :phonenum,
       :birth,
@@ -39,6 +40,7 @@ defmodule HippoAbs.Account.User do
   }
 
   schema "users" do
+    field :uid, :string, null: false
     field :name, :string
     field :type, :integer
     field :phonenum, :string
@@ -48,7 +50,11 @@ defmodule HippoAbs.Account.User do
     has_many :device, HippoAbs.Service.Device
     has_many :prescription, HippoAbs.Service.Syrup.Prescription
 
-    pow_user_fields()
+    # pow_user_fields()
+    field :password_hash,    :string
+    field :current_password, :string, virtual: true
+    field :password,         :string, virtual: true
+    field :confirm_password, :string, virtual: true
 
     timestamps([type: :utc_datetime_usec])
   end
@@ -57,28 +63,32 @@ defmodule HippoAbs.Account.User do
   def changeset(user_or_changeset, attrs) do
     user_or_changeset
     |> pow_changeset(attrs)
-    |> cast(attrs, [:name, :type])
-    |> validate_required([:name, :type])
-    |> validate_length(:name, min: 2, max: 32)
-    |> validate_number(:type, less_than_or_equal_to: 4, greater_than_or_equal_to: 0)
     |> change_trial(attrs)
     |> change_user(attrs)
     |> change_doctor(attrs)
     |> change_developer(attrs)
     |> change_admin(attrs)
+    |> cast(attrs, [:name, :type])
+    |> validate_required([:name, :type])
+    |> validate_length(:name, min: 2, max: 32)
+    |> validate_number(:type, less_than_or_equal_to: 4, greater_than_or_equal_to: 0)
   end
 
   def change_trial(user_or_changeset, %{"type" => 4} = attrs) do
     user_or_changeset
-    |> cast(attrs, [:gender, :birth])
-    |> validate_required([:gender, :birth])
+    # |> pow_changeset(attrs)
+    |> cast(attrs, [:uid, :gender, :birth])
+    |> validate_required([:uid, :gender, :birth])
     |> validate_number(:gender, less_than_or_equal_to: 1, greater_than_or_equal_to: 0)
+    |> unique_constraint([:uid], name: :users_uid_index)
   end
   def change_trial(user_or_changeset, _), do: user_or_changeset
 
   def change_user(user_or_changeset, %{"type" => 3} = attrs) do
     user_or_changeset
+    # |> pow_changeset(attrs)
     |> cast(attrs, [:phonenum, :gender, :birth])
+    |> validate_email(:uid)
     |> validate_required([:phonenum, :gender, :birth])
     |> validate_format(:phonenum, ~r"^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$")
     |> validate_number(:gender, less_than_or_equal_to: 1, greater_than_or_equal_to: 0)
@@ -87,24 +97,38 @@ defmodule HippoAbs.Account.User do
 
   def change_doctor(user_or_changeset, %{"type" => 2} = attrs) do
     user_or_changeset
+    # |> pow_changeset(attrs)
     |> cast(attrs, [:hospital_code])
+    |> validate_email(:uid)
     |> validate_required([:hospital_code])
-    |> validate_number(:hospital_code, greater_than: 10, less_than: 99)
+    |> validate_number(:hospital_code, greater_than: 10, less_than: 10000)
   end
   def change_doctor(user_or_changeset, _), do: user_or_changeset
 
-  def change_developer(user_or_changeset, %{"type" => 1} = _attrs), do: user_or_changeset
+  def change_developer(user_or_changeset, %{"type" => 1} = attrs) do
+    user_or_changeset
+    # |> pow_changeset(attrs)
+    |> cast(attrs, [])
+    |> validate_email(:uid)
+  end
   def change_developer(user_or_changeset, _), do: user_or_changeset
 
-  def change_admin(user_or_changeset, %{"type" => 0} = _attrs), do: user_or_changeset
+  def change_admin(user_or_changeset, %{"type" => 0} = attrs) do
+    user_or_changeset
+    # |> pow_changeset(attrs)
+    |> cast(attrs, [])
+    |> validate_email(:uid)
+  end
   def change_admin(user_or_changeset, _), do: user_or_changeset
 
-  # defp put_password_hash(changeset) do
-  #   case changeset do
-  #     %Ecto.Changeset{valid?: true, changes: %{password: pw}} ->
-  #       put_change(changeset, :password_hash, Pbkdf2.hash_pwd_salt(pw))
-  #     _ ->
-  #       changeset
-  #   end
-  # end
+  defp validate_email(changeset, field) do
+    changeset
+    |> validate_change(field, fn field, email ->
+      Pow.Ecto.Schema.Changeset.validate_email(email)
+      |> case do
+        :ok -> []
+        {:error, message} -> [{field, message}]
+      end
+    end)
+  end
 end

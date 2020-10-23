@@ -25,8 +25,8 @@ defmodule HippoAbs.Authorization do
     end
   end
 
-  def authenticate_by_email_and_password(email, password) do
-    user = Account.get_user_by_email(email)
+  def authenticate_by_email_and_password(uid, password) do
+    user = Account.get_user_by_uid(uid)
 
     cond do
       user && Pbkdf2.verify_pass(password, user.password_hash) ->

@@ -3,8 +3,8 @@ defmodule HippoAbs.Repo.Migrations.CreateUsers do
 
   def change do
     create table(:users) do
+      add :uid, :string, size: 64
       add :name, :string
-      add :email, :string
       add :password_hash, :string
       add :type, :smallint
       add :phonenum, :string
@@ -15,7 +15,7 @@ defmodule HippoAbs.Repo.Migrations.CreateUsers do
       timestamps(type: :timestamptz)
     end
 
-    create unique_index(:users, [:email])
+    create unique_index(:users, [:uid])
   end
 
 end
