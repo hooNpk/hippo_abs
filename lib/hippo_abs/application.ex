@@ -9,6 +9,7 @@ defmodule HippoAbs.Application do
     children = [
       # Start the Ecto repository
       HippoAbs.Repo,
+      # {HippoAbs.Repo, strategy: :one_for_one, max_restarts: 10_000, max_seconds: 18_000},
       # Start the Telemetry supervisor
       HippoAbsWeb.Telemetry,
       # Start the PubSub system

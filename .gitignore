@@ -40,3 +40,5 @@ npm-debug.log
 
 
 /config/dev.exs
+
+.git.store
