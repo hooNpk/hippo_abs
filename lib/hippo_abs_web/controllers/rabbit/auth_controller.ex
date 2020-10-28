@@ -13,11 +13,17 @@ defmodule HippoAbsWeb.Rabbit.AuthController do
     with  user when not is_nil(user) <- Account.get_user_by_uid(uid),
           verified when is_boolean(verified) <- Password.pbkdf2_verify(password, user.password_hash) do
             case verified do
-              true -> conn |> put_status(:created) |> json("allow")
-              _ -> conn |> json("deny")
+              true ->
+                Logger.info("allow")
+                conn |> send_resp(200, "allow")
+              _ ->
+                Logger.error("deny")
+                conn |> send_resp(200, "deny")
             end
     else
-      _ -> conn |> json("deny")
+      _ ->
+        Logger.error("deny")
+        conn |> send_resp(200, "deny")
     end
   end
 
@@ -25,29 +31,30 @@ defmodule HippoAbsWeb.Rabbit.AuthController do
     with  user when not is_nil(user) <- Account.get_user_by_uid(uid),
           devices when devices != [] <- ServiceContext.list_devices(user),
           services when services != [] <- ServiceContext.list_services(devices) do
-          # farms <- ServiceContext.list_farms(devices) do
-          # topics <- ServiceContext.list_tokens(farms) do
             Enum.any?(services, fn service ->
-              # farm_name = String.replace(service.name, [" ", ".", ",", "/", "|"], "")
-              Enum.member?([
-                "UP/" <> uid <> "|" <> service.id <> "|" <> service.service_type_cd,
-                "DN/" <> uid <> "|" <> service.id <> "|" <> service.service_type_cd,
-              ], routing_key)
+              topic = uid <> "|" <> "dtx" <> "|" <> Integer.to_string(service.id) <> "|" <> Integer.to_string(service.service_type_cd)
+              Enum.member?(["UP." <> topic, "DN." <> topic], routing_key)
             end)
             |> case do
-              true -> conn |> put_status(:created) |> json("allow")
-              _ -> conn |> json("deny")
+              true ->
+                Logger.info("allow")
+                conn |> send_resp(200, "allow")
+              _ ->
+                Logger.error("deny")
+                conn |> send_resp(200, "deny")
             end
     else
-      _ -> conn |> json("deny")
+      _ ->
+        Logger.error("deny")
+        conn |> send_resp(200, "deny")
     end
   end
 
 
-  def auth_vhost(conn, %{"vhost" => "/"}), do: conn |> put_status(:created) |> json("allow")
-  def auth_vhost(conn, %{"vhost" => _}), do: conn |> json("deny")
+  def auth_vhost(conn, %{"vhost" => "/"}), do: conn |> send_resp(200, "allow")
+  def auth_vhost(conn, %{"vhost" => _}), do: conn |> send_resp(200, "deny")
 
 
-  def auth_resource(conn, %{"vhost" => "/", "resource" => resource}) when resource in ["exchange", "queue", "topic"], do: conn |> put_status(:created) |> json("allow")
-  def auth_resource(conn, %{"vhost" => _}), do: conn |> json("deny")
+  def auth_resource(conn, %{"vhost" => "/", "resource" => resource}) when resource in ["exchange", "queue", "topic"], do: conn |> send_resp(200, "allow")
+  def auth_resource(conn, %{"vhost" => _}), do: conn |> send_resp(200, "deny")
 end

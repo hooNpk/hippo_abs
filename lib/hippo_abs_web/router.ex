@@ -54,10 +54,10 @@ defmodule HippoAbsWeb.Router do
     post "/session/renew", SessionController, :renew, singleton: true
 
     # for rabbitmq http auth
-    post "/rabbitmq/auth/user", Rabbit.AuthController, :auth_user, singleton: true
-    post "/rabbitmq/auth/vhost", Rabbit.AuthController, :auth_vhost, singleton: true
-    post "/rabbitmq/auth/resource", Rabbit.AuthController, :auth_resource, singleton: true
-    post "/rabbitmq/auth/topic", Rabbit.AuthController, :auth_topic, singleton: true
+    # post "/rabbitmq/auth/user", Rabbit.AuthController, :auth_user, singleton: true
+    # post "/rabbitmq/auth/vhost", Rabbit.AuthController, :auth_vhost, singleton: true
+    # post "/rabbitmq/auth/resource", Rabbit.AuthController, :auth_resource, singleton: true
+    # post "/rabbitmq/auth/topic", Rabbit.AuthController, :auth_topic, singleton: true
 
   end
 
