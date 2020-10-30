@@ -47,6 +47,7 @@ defmodule HippoAbs.MixProject do
       {:plug_cowboy, "~> 2.4"},
       {:pbkdf2_elixir, "~> 1.2"},
       {:pow, "~> 1.0.21"},
+      {:ecto_psql_extras, "~> 0.4"},
     ]
   end
 

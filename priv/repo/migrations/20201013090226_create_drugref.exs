@@ -5,6 +5,7 @@ defmodule HippoAbs.Repo.Migrations.CreateDrugReferences do
     create table(:drug_references) do
       add :drug_id, references(:drugs, on_delete: :delete_all)
       add :dosage_id, references(:dosage, on_delete: :delete_all)
+      add :amount, :smallint
 
       timestamps(type: :timestamptz)
     end

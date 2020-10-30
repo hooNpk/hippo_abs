@@ -7,26 +7,31 @@ defmodule HippoAbsWeb.DeviceController do
   action_fallback HippoAbsWeb.FallbackController
 
   def index(conn, _param, current_user) do
-    with  user when not is_nil(user) <- current_user,
     # with  user when not is_nil(user) <- Account.get_user(current_user.id),
           # {:ok, devices} <- ServiceContext.list_devices(user) do
-          devices when not is_nil(devices) <- ServiceContext.list_devices(user) do
-            conn
-            |> render("index.json", %{data: %{devices: devices}})
+    with user when not is_nil(user) <- current_user,
+      devices when not is_nil(devices) <- ServiceContext.list_devices(user)
+    do
+      conn
+      |> render("index.json", %{data: %{devices: devices}})
     end
   end
 
 
   def create(conn, %{"device" => device_params}, current_user) do
-    with  {:ok, device} <- ServiceContext.create_device(current_user, device_params) do
+    with user when not is_nil(user) <- current_user,
+      {:ok, device} <- ServiceContext.create_device(user, device_params)
+    do
       conn
         |> render("show.json", %{data: %{id: device.id}})
     end
   end
 
 
-  def delete(conn, %{"device" => %{"id" => id}}, _current_user) do
-    with  {:ok, device}<- ServiceContext.delete_device(id) do
+  def delete(conn, %{"device" => %{"id" => id}}, current_user) do
+    with user when not is_nil(user) <- current_user,
+      {:ok, device}<- ServiceContext.delete_device(id)
+    do
       conn
       |> render("show.json", device: device)
     end

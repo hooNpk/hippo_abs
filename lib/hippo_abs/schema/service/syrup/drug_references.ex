@@ -4,14 +4,14 @@ defmodule HippoAbs.Service.Syrup.DrugReferences do
 
   @derive {
     Jason.Encoder, only: [
-      # :id, :drug_id, :dosage_id, :drug, :dosage, :inserted_at, :updated_at
-      :id, :drug_id, :dosage_id, :inserted_at, :updated_at
+      :id, :drug_id, :dosage_id, :amount, :inserted_at, :updated_at
     ]
   }
 
   schema "drug_references" do
     belongs_to :drug, HippoAbs.Service.Syrup.Drugs
     belongs_to :dosage, HippoAbs.Service.Syrup.Dosage
+    field :amount, :integer
 
     timestamps([type: :utc_datetime_usec])
   end
@@ -19,14 +19,14 @@ defmodule HippoAbs.Service.Syrup.DrugReferences do
   @doc false
   def changeset(drugref, attrs) do
     drugref
-    |> cast(attrs, [:drug_id, :dosage_id])
-    |> validate_required([:drug_id, :dosage_id])
+    |> cast(attrs, [:drug_id, :dosage_id, :amount])
+    |> validate_required([:drug_id, :dosage_id, :amount])
     |> unique_constraint([:drug_id, :dosage_id], name: :drug_references_drug_id_dosage_id_index)
   end
 
-  def changeset(drugref, dosage, drug) do
+  def changeset(drugref, dosage, drug, amount) do
     drugref
-    |> changeset(%{dosage_id: dosage.id, drug_id: drug.id})
+    |> changeset(%{dosage_id: dosage.id, drug_id: drug.id, amount: amount})
     |> put_assoc(:dosage, dosage)
     |> put_assoc(:drug, drug)
   end

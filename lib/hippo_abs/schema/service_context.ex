@@ -14,7 +14,7 @@ defmodule HippoAbs.ServiceContext do
 
   def list_devices, do: Repo.all(Device) |> Repo.preload(:user)
 
-  def list_devices(%Account.User{} = user), do: get_devices_by_user(user)
+  def list_devices(%Account.User{} = user), do: list_devices_by_user(user)
 
   def list_farms do
     Farm
@@ -64,7 +64,7 @@ defmodule HippoAbs.ServiceContext do
 
   def get_device(id), do: Repo.get(Device, id) |> Repo.preload(:user)
 
-  def get_devices_by_user(user) do
+  def list_devices_by_user(user) do
     # user
     # |> Repo.preload(:device)
     # |> Map.fetch(:device)
@@ -81,11 +81,13 @@ defmodule HippoAbs.ServiceContext do
     |> Repo.all()
   end
 
-  def get_service(keyword) do
+  def get_service(keyword) when is_list(keyword) do
     Repo.get_by(Service, keyword) # device_id: 1, farm_id: 1
     |> Repo.preload(:device)
     |> Repo.preload(:farm)
   end
+
+  def get_service(id), do: Repo.get(Service, id) |> Repo.preload(:farm) |> Repo.preload(:device)
 
   def get_service_detail(service_type_cd) do
     query =
@@ -163,12 +165,25 @@ defmodule HippoAbs.ServiceContext do
     Repo.delete(get_farm(id))
   end
 
-  def delete_service(%Service{} = service) do
+  defp delete_service(%Service{} = service) do
     Repo.delete(service)
   end
 
-  def delete_service(keyword) when is_list(keyword) do
-    Repo.delete(get_service(keyword))
+  def delete_service_by(keywords) do
+    case get_service(keywords) do
+      nil -> {:error, :not_found}
+      service -> delete_service(service)
+    end
+  end
+
+  def delete_service_by(device_ids, service_id) when is_list(device_ids) do
+    with service when not is_nil(service) <- get_service(service_id),
+      true <- service.device_id in device_ids
+    do
+      delete_service(service)
+    else
+      _ -> {:error, :not_found}
+    end
   end
 
   def change_device(%Device{} = device, attrs \\ %{}) do

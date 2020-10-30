@@ -4,12 +4,11 @@ defmodule HippoAbs.Service.Syrup.Dosage do
 
   @derive {
     Jason.Encoder, only: [
-      :id, :name, :period, :count, :amount, :detail, :prescription_id, :inserted_at, :updated_at
+      :id, :name, :period, :count, :detail, :prescription_id, :inserted_at, :updated_at
     ]
   }
 
   schema "dosage" do
-    field :amount, :integer
     field :count, :integer
     field :detail, :integer
     field :name, :string
@@ -23,8 +22,8 @@ defmodule HippoAbs.Service.Syrup.Dosage do
   @doc false
   def changeset(dosage, attrs) do
     dosage
-    |> cast(attrs, [:period, :detail, :count, :name, :amount])
-    |> validate_required([:period, :detail, :count, :name, :amount])
+    |> cast(attrs, [:period, :detail, :count, :name])
+    |> validate_required([:period, :detail, :count, :name])
   end
 
   def changeset(dosage, prescription, attrs) do

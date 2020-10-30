@@ -16,7 +16,7 @@ defmodule HippoAbs.SyrupContext do
 
   def list_prescriptions(%Account.User{} = user), do: list_prescriptions_by_user(user)
 
-  def list_prescriptions_by_user(user) do
+  defp list_prescriptions_by_user(user) do
     Ecto.assoc(user, :prescription)
     |> Repo.all()
     |> Repo.preload(:dosage)
@@ -31,15 +31,17 @@ defmodule HippoAbs.SyrupContext do
     |> Repo.preload(:drug_references)
   end
 
-  def list_dosage_by(prescriptions) do
+  def list_dosage_by(prescriptions) when is_list(prescriptions) do
     # Logger.warn inspect prescriptions
 
     prescriptions
-    |> Enum.map(fn prescription ->
-      Ecto.assoc(prescription, :dosage)
-      |> Repo.all()
-      |> Repo.preload(:drug_references)
-    end)
+    |> Enum.map(&list_dosage_by/1)
+  end
+
+  def list_dosage_by(prescription) do
+    Ecto.assoc(prescription, :dosage)
+    |> Repo.all()
+    |> Repo.preload(:drug_references)
   end
 
   def list_drugs(term, limit, offset) do
@@ -75,7 +77,7 @@ defmodule HippoAbs.SyrupContext do
   def get_prescription_by(user, id) do
     query = from p in Ecto.assoc(user, :prescription), where: p.id == ^id
     query
-    |> Repo.all()
+    |> Repo.one()
     |> Repo.preload(:dosage)
 end
 
@@ -161,16 +163,10 @@ end
     end
   end
 
-  def create_drug_references(%Dosage{} = dosage, %Drugs{} = drug) do
-    %DrugReferences{}
-    |> DrugReferences.changeset(dosage, drug)
-    |> Repo.insert()
-  end
-
-  def create_drug_references(dosage_id, drug_ids) when is_list(drug_ids) do
-    Stream.map(drug_ids, fn id ->
+  def create_drug_references(dosage_id, drug_refs) when is_list(drug_refs) do
+    Stream.map(drug_refs, fn drug_ref ->
       %DrugReferences{}
-      |> DrugReferences.changeset(%{dosage_id: dosage_id, drug_id: id})
+      |> DrugReferences.changeset(%{dosage_id: dosage_id, drug_id: drug_ref["drug_id"], amount: drug_ref["amount"]})
     end)
     |> Stream.map(fn changeset ->
       key = "changeset:#{changeset.changes.drug_id}"
@@ -184,9 +180,15 @@ end
     end
   end
 
-  def create_drug_references(dosage_id, drug_id) do
+  # def create_drug_references(%Dosage{} = dosage, %Drugs{} = drug, amount) do
+  #   %DrugReferences{}
+  #   |> DrugReferences.changeset(dosage, drug, amount)
+  #   |> Repo.insert()
+  # end
+
+  def create_drug_references(dosage_id, %{"drug_id" => drug_id, "amount" => amount} = _drugref) do
     %DrugReferences{}
-    |> DrugReferences.changeset(get_dosage(dosage_id), get_drug((drug_id)))
+    |> DrugReferences.changeset(get_dosage(dosage_id), get_drug(drug_id), amount)
     |> Repo.insert()
   end
 
@@ -202,23 +204,45 @@ end
     |> Repo.update()
   end
 
-  def delete_prescription(%Prescription{} = prescription) do
+  defp delete_prescription(%Prescription{} = prescription) do
     Repo.delete(prescription)
   end
 
-  def delete_prescription(id) when is_integer(id) do
-    case get_prescription(id) do
+  def delete_prescription_by(id) do
+    case prescription = get_prescription(id) do
       nil -> {:error, :not_found}
-      _ -> Repo.delete(get_prescription(id))
+      _ -> delete_prescription(prescription)
     end
   end
 
-  def delete_dosage(%Dosage{} = dosage) do
+  def delete_prescription_by(user_id, id) do
+    with prescription when not is_nil(prescription) <- get_prescription(id),
+      true <- prescription.user_id === user_id
+    do
+      delete_prescription(prescription)
+    else
+      _ -> {:error, :not_found}
+    end
+  end
+
+  defp delete_dosage(%Dosage{} = dosage) do
     Repo.delete(dosage)
   end
 
-  def delete_dosage(id) when is_integer(id) do
-    Repo.delete(get_dosage(id))
+  def delete_dosage_by(id) do
+    case dosage = get_dosage(id) do
+      nil -> {:error, :not_found}
+      _ -> delete_dosage(dosage)
+    end
   end
 
+  def delete_dosage_by(prescription_id, id) do
+    with dosage when not is_nil(dosage) <- get_dosage(id),
+      true <- dosage.prescription_id === prescription_id
+    do
+      delete_dosage(dosage)
+    else
+      _ -> {:error, :not_found}
+    end
+  end
 end

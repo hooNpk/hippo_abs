@@ -111,7 +111,7 @@ defmodule HippoAbsWeb.Router do
 
     scope "/" do
       pipe_through :browser
-      live_dashboard "/dashboard", metrics: HippoAbsWeb.Telemetry
+      live_dashboard "/dashboard", metrics: HippoAbsWeb.Telemetry, ecto_repos: [HippoAbs.Repo]
     end
   end
 end

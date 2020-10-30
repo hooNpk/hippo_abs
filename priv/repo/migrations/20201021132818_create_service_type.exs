@@ -3,7 +3,7 @@ defmodule HippoAbs.Repo.Migrations.CreateServiceType do
 
   import Ecto.Query
 
-  def change do
+  def up do
     create table(:service_type) do
       add :service_type_cd, :smallint, null: false
       add :service_name, :string
@@ -21,5 +21,10 @@ defmodule HippoAbs.Repo.Migrations.CreateServiceType do
       %{service_type_cd: 2, service_name: "DIB Service", description: "당뇨발 서비스", inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()},
       %{service_type_cd: 100, service_name: "DIB Service (임상)", description: "당뇨발 서비스 1차 임상", inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()},
     ])
+  end
+
+  def down do
+    drop unique_index(:service_type, [:service_type_cd])
+    drop table(:service_type)
   end
 end

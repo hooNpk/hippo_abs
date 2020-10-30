@@ -14,7 +14,8 @@ defmodule HippoAbsWeb.FarmController do
 
   def create(conn, %{"farm" => farm_params, "topics" => topics}) do
     Logger.warn(inspect topics)
-    with  {:ok, farm} <- ServiceContext.create_farm(farm_params) do
+    with {:ok, farm} <- ServiceContext.create_farm(farm_params)
+    do
       conn
       |> render("show.json", %{data: %{farm_id: farm.id}})
     end
@@ -35,4 +36,5 @@ defmodule HippoAbsWeb.FarmController do
       |> render("show.json", farm: farm)
     end
   end
+
 end
